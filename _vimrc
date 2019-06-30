@@ -178,3 +178,7 @@ endif
 
 "set snippet file dir
 let g:neosnippet#snippets_directory='~/.vim/snippets' 
+" TeX周りの設定
+let g:neosnippet#disable_runtime_snippets = { 'tex' : 1 }
+let s:my_snippet='~/.vim/snippets/'
+let g:neosnippet#snippets_directory = s:my_snippet
