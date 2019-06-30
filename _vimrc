@@ -177,4 +177,4 @@ if has('conceal')
 endif
 
 "set snippet file dir
-let g:neosnippet#snippets_directory='~/.vim/bundle/neosnippet-snippets/snippets/,~/.vim/snippets' 
+let g:neosnippet#snippets_directory='~/.vim/snippets' 
