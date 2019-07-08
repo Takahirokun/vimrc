@@ -3,6 +3,7 @@ augroup MyAutoCmd
     autocmd!
 augroup END
 
+" プラグイン
 call plug#begin('~/.vim/plugged')
 
 Plug 'scrooloose/nerdtree'
@@ -35,8 +36,15 @@ set wildmenu            " コマンドライン補完が強力になる
 set showcmd             " コマンドを画面の最下部に表示する
 set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
-set colorcolumn=80      " その代わり80文字目にラインを入れる
-set cursorline      " その代わり80文字目にラインを入れる
+""set colorcolumn=80      " その代わり80文字目にラインを入れる
+set cursorline          " カーソル位置の強調
+set pumheight=10        " 補完メニューの高さを10に
+" vimの背景も透過させる
+highlight Normal ctermbg=none
+highlight NonText ctermbg=none
+highlight LineNr ctermbg=none
+highlight Folded ctermbg=none
+highlight EndOfBuffer ctermbg=none 
 " 前時代的スクリーンベルを無効化
 set t_vb=
 set novisualbell
@@ -108,7 +116,7 @@ inoremap ( ()<left>
 inoremap { {}<left>
 inoremap " ""<left>
 inoremap ' ''<left>
-" {}でEnterを押すとインデントが入って括弧の中に移動(C++用)
+" {}でEnterを押すとインデントが入って括弧の中に移動
 function! IndentBraces()
     let nowletter = getline(".")[col(".")-1]    " 今いるカーソルの文字
     let beforeletter = getline(".")[col(".")-2] " 1つ前の文字
@@ -128,10 +136,10 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 " Shift + 矢印でウィンドウサイズを変更
-nnoremap <S-Left>  <C-w><<CR>
-nnoremap <S-Right> <C-w>><CR>
-nnoremap <S-Up>    <C-w>-<CR>
-nnoremap <S-Down>  <C-w>+<CR>
+nnoremap <S-Left>  <C-w><
+nnoremap <S-Right> <C-w>>
+nnoremap <S-p>    <C-w>+
+nnoremap <S-m>  <C-w>-
 " タブ間の移動
 noremap <C-n> gt
 nnoremap <C-p> gT
