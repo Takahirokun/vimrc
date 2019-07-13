@@ -39,7 +39,6 @@ set wildmenu            " コマンドライン補完が強力になる
 set showcmd             " コマンドを画面の最下部に表示する
 set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
-""set colorcolumn=80      " その代わり80文字目にラインを入れる
 set cursorline          " カーソル位置の強調
 set pumheight=10        " 補完メニューの高さを10に
 " vimの背景も透過させる
@@ -51,7 +50,7 @@ highlight EndOfBuffer ctermbg=none
 " 前時代的スクリーンベルを無効化
 set t_vb=
 set novisualbell
-set foldmethod=indent    " 折り畳み
+set foldmethod=indent    " 折り畳みの単位をインデントに
 set foldlevel=100    " ファイルを開くときに折り畳みをしない
 
 """ 編集関係
