@@ -16,15 +16,20 @@ else
   Plug 'Shougo/deoplete.nvim'
   Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
-
-  Plug 'davidhalter/jedi-vim'
-
+<<<<<<< HEAD
+=======
+>>>>>>> develop
 endif
 let g:deoplete#enable_at_startup = 1
 
 Plug 'Shougo/neosnippet.vim'
 "Plug 'Shougo/neosnippet-snippets'
 
+<<<<<<< HEAD
+=======
+  Plug 'davidhalter/jedi-vim'
+
+>>>>>>> develop
 call plug#end()
 
 " 表示関係
