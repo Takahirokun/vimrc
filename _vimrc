@@ -16,14 +16,13 @@ else
   Plug 'Shougo/deoplete.nvim'
   Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
-
-  Plug 'davidhalter/jedi-vim'
-
 endif
 let g:deoplete#enable_at_startup = 1
 
 Plug 'Shougo/neosnippet.vim'
 "Plug 'Shougo/neosnippet-snippets'
+
+  Plug 'davidhalter/jedi-vim'
 
 call plug#end()
 
