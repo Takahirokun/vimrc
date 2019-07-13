@@ -1,2 +1,2 @@
-# dotfiles
-ドットファイルの管理
+# vimrc
+.vimrcの管理
