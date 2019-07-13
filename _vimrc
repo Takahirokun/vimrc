@@ -16,6 +16,9 @@ else
   Plug 'Shougo/deoplete.nvim'
   Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
+
+  Plug 'davidhalter/jedi-vim'
+
 endif
 let g:deoplete#enable_at_startup = 1
 
