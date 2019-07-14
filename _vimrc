@@ -18,8 +18,10 @@ else
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
 
-  Plug 'Shougo/neosnippet.vim'
-  Plug 'Shougo/neosnippet-snippets' 
+Plug 'Shougo/neosnippet.vim'
+Plug 'Shougo/neosnippet-snippets' 
+
+Plug 'deoplete-plugins/deoplete-jedi'
 
 call plug#end()
 
