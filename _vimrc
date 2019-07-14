@@ -17,12 +17,9 @@ else
   Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
-let g:deoplete#enable_at_startup = 1
 
   Plug 'Shougo/neosnippet.vim'
-  "Plug 'Shougo/neosnippet-snippets'
-
-  Plug 'davidhalter/jedi-vim'
+  Plug 'Shougo/neosnippet-snippets' 
 
 call plug#end()
 
@@ -178,11 +175,6 @@ autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 map <C-n> :NERDTreeToggle<CR>
 " Use deoplete
 let g:deoplete#enable_at_startup = 1
-" vimtexとdeopleteを調和させる
- " This is new style
-  call deoplete#custom#var('omni', 'input_patterns', {
-          \ 'tex': g:vimtex#re#deoplete
-          \})
 
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
@@ -201,14 +193,9 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 let g:neosnippet#disable_runtime_snippets = { 'tex' : 1 }
 let s:my_snippet='~/.vim/snippets/'
 let g:neosnippet#snippets_directory = s:my_snippet
-"  jedi-vimの設定
-set completeopt=menuone                        " 補完候補を呼び出すとき常にポップアップメニューを使う
-autocmd! User jedi-vim call s:jedivim_hook()   " vim-plugの遅延ロード呼び出し
-function! s:jedivim_hook()              " jedi-vimを使うときだけ呼び出す処理を関数化
-  let g:jedi#auto_initialization    = 0 " 自動で実行される初期化処理を無効
-  let g:jedi#auto_vim_configuration = 0 " 'completeopt' オプションを上書きしない
-  let g:jedi#popup_on_dot           = 0 " ドット(.)を入力したとき自動で補完しない
-  let g:jedi#popup_select_first     = 0 " 補完候補の1番目を選択しない
-  let g:jedi#show_call_signatures   = 0 " 関数の引数表示を無効(ポップアップのバグを踏んだことがあるため)
-  autocmd FileType python setlocal omnifunc=jedi#completions   " 補完エンジンはjediを使う
-endfunction
+
+ " vimtexとdeopleteを調和させる
+ " This is new style
+  call deoplete#custom#var('omni', 'input_patterns', {
+          \ 'tex': g:vimtex#re#deoplete
+          \})  
