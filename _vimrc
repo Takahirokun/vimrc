@@ -39,6 +39,7 @@ set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
 set cursorline          " カーソル位置の強調
 set pumheight=10        " 補完メニューの高さを10に
+set completeopt-=preview " Previewを消す
 " vimの背景も透過させる
 highlight Normal ctermbg=none
 highlight NonText ctermbg=none
@@ -201,3 +202,5 @@ let g:neosnippet#snippets_directory = s:my_snippet
   call deoplete#custom#var('omni', 'input_patterns', {
           \ 'tex': g:vimtex#re#deoplete
           \})  
+" deoplete-jediの設定
+let g:deoplete#sources#jedi#enable_typeinfo = 0 " disable type information of completions
