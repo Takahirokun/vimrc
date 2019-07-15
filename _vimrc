@@ -43,6 +43,7 @@ set showcmd             " コマンドを画面の最下部に表示する
 set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
 set cursorline          " カーソル位置の強調
+hi CursorLineNr ctermfg=248
 set pumheight=10        " 補完メニューの高さを10に
 set completeopt-=preview " Previewを消す
 " vimの背景も透過させる
@@ -211,5 +212,9 @@ let g:neosnippet#snippets_directory = s:my_snippet
 let g:deoplete#sources#jedi#enable_typeinfo = 0 " disable type information of completions
 " LSP configuration
 let g:LanguageClient_serverCommands = {
+  \ 'c': ['clangd'],
   \ 'cpp': ['clangd'],
   \ }
+nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
+nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+nnoremap <silent> rn :call LanguageClient#textDocument_rename()<CR>
