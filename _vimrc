@@ -23,6 +23,11 @@ Plug 'Shougo/neosnippet-snippets'
 
 Plug 'deoplete-plugins/deoplete-jedi'
 
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
+
 call plug#end()
 
 " 表示関係
@@ -204,3 +209,7 @@ let g:neosnippet#snippets_directory = s:my_snippet
           \})  
 " deoplete-jediの設定
 let g:deoplete#sources#jedi#enable_typeinfo = 0 " disable type information of completions
+" LSP configuration
+let g:LanguageClient_serverCommands = {
+  \ 'cpp': ['clangd'],
+  \ }
