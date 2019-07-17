@@ -28,6 +28,11 @@ Plug 'autozimu/LanguageClient-neovim', {
     \ 'do': 'bash install.sh',
     \ }
 
+Plug 'tpope/vim-fugitive'
+
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
 call plug#end()
 
 " 表示関係
@@ -218,3 +223,6 @@ let g:LanguageClient_serverCommands = {
 nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
 nnoremap <silent> rn :call LanguageClient#textDocument_rename()<CR>
+" airline aetting
+let g:airline_theme = 'powerlineish'
+let g:airline#extensions#branch#enabled = 1
