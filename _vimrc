@@ -39,7 +39,7 @@ call plug#end()
 set t_Co=256
 set background=dark
 colorscheme hybrid
-syntax on
+syntax enable
 set list                " 不可視文字の可視化
 set number              " 行番号の表示
 set ruler               " カーソル位置が右下に表示される
@@ -49,6 +49,7 @@ set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
 set cursorline          " カーソル位置の強調
 hi CursorLineNr ctermfg=248
+hi clear cursorline
 set pumheight=10        " 補完メニューの高さを10に
 set completeopt-=preview " Previewを消す
 " vimの背景も透過させる
@@ -94,6 +95,43 @@ endif
 set nowritebackup
 set nobackup
 set noswapfile
+" tabline settings
+function MyTabLabel(n)
+    let buflist = tabpagebuflist(a:n)
+    let winnr = tabpagewinnr(a:n)
+    return bufname(buflist[winnr - 1])
+endfunction
+
+hi clear TabLine
+hi clear TabLineSel
+hi clear TabLineFill
+hi TabLine ctermfg=244, ctermbg=235, term=underline
+hi TabLineSel ctermfg=256, ctermbg=232
+hi TabLineFill ctermbg=235, term=underline
+function MyTabLine()
+    let s = ''
+    for i in range(tabpagenr('$'))
+    " 強調表示グループの選択
+    if i + 1 == tabpagenr()
+        let s .= '%#TabLineSel#' 
+    else
+        let s .= '%#TabLine#' 
+    endif
+    " タブページ番号の設定 (マウスクリック用)
+    let s .= '%' . (i + 1) . 'T'
+
+    " ラベルは MyTabLabel() で作成する
+    let s .= ' %{MyTabLabel(' . (i + 1) . ')} '
+
+    let s.= '%#TabLineFill#|'
+    endfor
+
+    " 最後のタブページの後は TabLineFill で埋め、タブページ番号をリセッ
+    " トする
+    let s .= '%#TabLineFill#%T'
+    return s
+endfunction
+set tabline=%!MyTabLine()
 
 """ 検索関係
 set ignorecase          " 大文字小文字を区別しない
@@ -152,7 +190,8 @@ nnoremap <S-Left>  <C-w><
 nnoremap <S-Right> <C-w>>
 nnoremap <S-p>    <C-w>+
 nnoremap <S-m>  <C-w>-
-" タブ間の移動
+" タブの作成・タブ間の移動
+noremap st :tabnew
 noremap <C-n> gt
 nnoremap <C-p> gT
 " :e などでファイルを開く際にフォルダが存在しない場合は自動作成
@@ -186,7 +225,7 @@ augroup END
 " NERDTreeに関する設定
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-map <C-n> :NERDTreeToggle<CR>
+map <C-a> :NERDTreeToggle<CR>
 " Use deoplete
 let g:deoplete#enable_at_startup = 1
 
@@ -224,5 +263,6 @@ nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
 nnoremap <silent> rn :call LanguageClient#textDocument_rename()<CR>
 " airline aetting
-let g:airline_theme = 'powerlineish'
+let g:airline_theme='jellybeans'
 let g:airline#extensions#branch#enabled = 1
+
