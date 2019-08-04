@@ -63,6 +63,9 @@ set t_vb=
 set novisualbell
 set foldmethod=indent    " 折り畳みの単位をインデントに
 set foldlevel=100    " ファイルを開くときに折り畳みをしない
+" terminal
+noremap ter :ter ++curwin
+set termwinkey=<C-L>
 
 """ 編集関係
 set infercase           " 補完時に大文字小文字を区別しない
@@ -101,7 +104,6 @@ function MyTabLabel(n)
     let winnr = tabpagewinnr(a:n)
     return bufname(buflist[winnr - 1])
 endfunction
-
 hi clear TabLine
 hi clear TabLineSel
 hi clear TabLineFill
@@ -138,28 +140,15 @@ set ignorecase          " 大文字小文字を区別しない
 set smartcase           " 検索文字に大文字がある場合は大文字小文字を区別
 set incsearch           " インクリメンタルサーチ
 set hlsearch            " 検索マッチテキストをハイライト
-" バックスラッシュやクエスチョンを状況に合わせ自動的にエスケープ
-cnoremap <expr> / getcmdtype() == '/' ? '\/' : '/'
-cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
 
 """ マクロおよびキー設定
 " ESCを二回押すことでハイライトを消す
 nmap <silent> <Esc><Esc> :nohlsearch<CR>
 " カーソル下の単語を * で検索
 vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v, '\/'), "\n", '\\n', 'g')<CR><CR>
-" 検索後にジャンプした際に検索単語を画面中央に持ってくる
-nnoremap n nzz
-nnoremap N Nzz
-nnoremap * *zz
-nnoremap # #zz
-nnoremap g* g*zz
-nnoremap g# g#zz
 " j, k による移動を折り返されたテキストでも自然に振る舞うように変更
 nnoremap j gj
 nnoremap k gk
-" TABにて対応ペアにジャンプ
-nnoremap <Tab> %
-vnoremap <Tab> %
 " [ と打ったら [] って入力されてしかも括弧の中にいる(以下同様)
 inoremap [ []<left>
 inoremap ( ()<left>
