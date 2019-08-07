@@ -19,7 +19,6 @@ else
 endif
 
 Plug 'Shougo/neosnippet.vim'
-Plug 'Shougo/neosnippet-snippets' 
 
 Plug 'deoplete-plugins/deoplete-jedi'
 
@@ -30,16 +29,16 @@ Plug 'autozimu/LanguageClient-neovim', {
 
 Plug 'tpope/vim-fugitive'
 
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'itchyny/lightline.vim'
 
 call plug#end()
 
 " 表示関係
 set t_Co=256
 set background=dark
+set laststatus=2
 colorscheme hybrid
-syntax enable
+syntax on
 set list                " 不可視文字の可視化
 set number              " 行番号の表示
 set ruler               " カーソル位置が右下に表示される
@@ -47,9 +46,9 @@ set wildmenu            " コマンドライン補完が強力になる
 set showcmd             " コマンドを画面の最下部に表示する
 set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
-set cursorline          " カーソル位置の強調
-hi CursorLineNr ctermfg=248
-hi clear cursorline
+"set cursorline          " カーソル位置の強調
+"hi CursorLineNr ctermfg=248
+"hi clear cursorline
 set pumheight=10        " 補完メニューの高さを10に
 set completeopt-=preview " Previewを消す
 " vimの背景も透過させる
@@ -61,8 +60,6 @@ highlight EndOfBuffer ctermbg=none
 " 前時代的スクリーンベルを無効化
 set t_vb=
 set novisualbell
-set foldmethod=indent    " 折り畳みの単位をインデントに
-set foldlevel=100    " ファイルを開くときに折り畳みをしない
 " terminal
 noremap ter :ter ++curwin
 set termwinkey=<C-L>
@@ -217,7 +214,11 @@ autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 map <C-a> :NERDTreeToggle<CR>
 " Use deoplete
 let g:deoplete#enable_at_startup = 1
-
+let g:deoplete#auto_complete_delay = 500
+let g:deoplete#on_insert_enter = 0
+let g:deoplete#on_text_changed_i=0
+let g:deoplete#file#enable_buffer_path = 1
+let g:deoplete#enable_refresh_always = 0
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
@@ -236,6 +237,8 @@ let g:neosnippet#disable_runtime_snippets = { 'tex' : 1 }
 let s:my_snippet='~/.vim/snippets/'
 let g:neosnippet#snippets_directory = s:my_snippet
 
+"" vimtex
+let g:vimtex_fold_enabled = 0
  " vimtexとdeopleteを調和させる
  " This is new style
   call deoplete#custom#var('omni', 'input_patterns', {
@@ -251,7 +254,4 @@ let g:LanguageClient_serverCommands = {
 nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
 nnoremap <silent> rn :call LanguageClient#textDocument_rename()<CR>
-" airline aetting
-let g:airline_theme='jellybeans'
-let g:airline#extensions#branch#enabled = 1
 
