@@ -38,6 +38,7 @@ set t_Co=256
 set background=dark
 set laststatus=2
 colorscheme hybrid
+filetype plugin on
 syntax on
 set list                " 不可視文字の可視化
 set number              " 行番号の表示
@@ -201,7 +202,6 @@ function! s:ChangeCurrentDir(directory, bang)
 endfunction
 autocmd MyAutoCmd VimEnter * call s:ChangeCurrentDir('', '')
 " RとC/C++のコンパイルを自動的に行う
-filetype plugin on
 augroup setAutoCompile
     autocmd!
     autocmd BufWritePost *.c :!gcc %:p
