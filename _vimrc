@@ -38,8 +38,8 @@ set t_Co=256
 set background=dark
 set laststatus=2
 colorscheme hybrid
-filetype plugin on
-syntax on
+filetype plugin on 
+syntax enable
 set list                " 不可視文字の可視化
 set number              " 行番号の表示
 set ruler               " カーソル位置が右下に表示される
@@ -254,4 +254,10 @@ let g:LanguageClient_serverCommands = {
 nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
 nnoremap <silent> rn :call LanguageClient#textDocument_rename()<CR>
-
+" lightline settings
+let g:lightline = {
+    \'enable': {
+        \ 'statusline': 1,
+        \ 'tabline': 0
+        \ } 
+    \}
