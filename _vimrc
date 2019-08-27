@@ -8,8 +8,6 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'scrooloose/nerdtree'
 
-Plug 'lervag/vimtex'
-
 if has('nvim')
   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 else
@@ -17,8 +15,11 @@ else
   Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
+let g:deoplete#enable_at_startup = 1
 
 Plug 'Shougo/neosnippet.vim'
+
+Plug 'lervag/vimtex'
 
 Plug 'deoplete-plugins/deoplete-jedi'
 
@@ -47,9 +48,6 @@ set wildmenu            " コマンドライン補完が強力になる
 set showcmd             " コマンドを画面の最下部に表示する
 set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
-"set cursorline          " カーソル位置の強調
-"hi CursorLineNr ctermfg=248
-"hi clear cursorline
 set pumheight=10        " 補完メニューの高さを10に
 set completeopt-=preview " Previewを消す
 " vimの背景も透過させる
@@ -80,7 +78,6 @@ set expandtab           " <Tab>押下時に<Tab>ではなく、ホワイトス�
 set tabstop=4           " <Tab>が対応する空白の数
 au BufNewFile,BufRead *.yml set tabstop=2
 set shiftround          " '<'や'>'でインデントする際に'shiftwidth'の倍数に丸める
-set nf=                 " インクリメント、デクリメントを10進数にする
 " 対応括弧に'<'と'>'のペアを追加
 set matchpairs& matchpairs+=<:>
 " バックスペースでなんでも消せるようにする
@@ -128,7 +125,7 @@ function MyTabLine()
 
     " 最後のタブページの後は TabLineFill で埋め、タブページ番号をリセッ
     " トする
-    let s .= '%#TabLineFill#%T'
+    
     return s
 endfunction
 set tabline=%!MyTabLine()
@@ -181,50 +178,31 @@ nnoremap <S-m>  <C-w>-
 noremap st :tabnew
 noremap <C-n> gt
 nnoremap <C-p> gT
-" :e などでファイルを開く際にフォルダが存在しない場合は自動作成
-function! s:mkdir(dir, force)
-  if !isdirectory(a:dir) && (a:force ||
-        \ input(printf('"%s" does not exist. Create? [y/N]', a:dir)) =~? '^y\%[es]$')
-    call mkdir(iconv(a:dir, &encoding, &termencoding), 'p')
-  endif         
-endfunction
-autocmd MyAutoCmd BufWritePre * call s:mkdir(expand('<afile>:p:h'), v:cmdbang)
-" vim 起動時のみカレントディレクトリを開いたファイルの親ディレクトリに指定
-function! s:ChangeCurrentDir(directory, bang)
-    if a:directory == ''
-        lcd %:p:h
-    else
-        execute 'lcd' . a:directory
-    endif
-    if a:bang == ''
-        pwd
-    endif
-endfunction
-autocmd MyAutoCmd VimEnter * call s:ChangeCurrentDir('', '')
-" RとC/C++のコンパイルを自動的に行う
+"C/C++のコンパイルを自動的に行う
 augroup setAutoCompile
     autocmd!
     autocmd BufWritePost *.c :!gcc %:p
     autocmd BufWritePost *.cpp :!g++ -std=c++14 %:p
-    autocmd BufWritePost *.R :!R -f %:p
 augroup END
 " NERDTreeに関する設定
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 map <C-a> :NERDTreeToggle<CR>
 " Use deoplete
-let g:deoplete#enable_at_startup = 1
 let g:deoplete#auto_complete_delay = 500
 let g:deoplete#on_insert_enter = 0
 let g:deoplete#on_text_changed_i=0
 let g:deoplete#file#enable_buffer_path = 1
 let g:deoplete#enable_refresh_always = 0
+let g:neosnippet#disable_runtime_snippets = {
+\   '_' : 1,
+\ }  
+let g:neosnippet#snippets_directory = '~/.vim/snippets' 
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
-
 " SuperTab like snippets behavior.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
 "imap <expr><TAB>
@@ -233,11 +211,9 @@ xmap <C-k>     <Plug>(neosnippet_expand_target)
 " \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-let g:neosnippet#disable_runtime_snippets = { 'tex' : 1 }
-let s:my_snippet='~/.vim/snippets/'
-let g:neosnippet#snippets_directory = s:my_snippet
 
 "" vimtex
+hi texMath ctermfg=149
 let g:vimtex_fold_enabled = 0
  " vimtexとdeopleteを調和させる
  " This is new style
@@ -246,6 +222,7 @@ let g:vimtex_fold_enabled = 0
           \})  
 " deoplete-jediの設定
 let g:deoplete#sources#jedi#enable_typeinfo = 0 " disable type information of completions
+let g:deoplete#sources#jedi#python_path = '/anaconda3/bin/python'
 " LSP configuration
 let g:LanguageClient_serverCommands = {
   \ 'c': ['clangd'],
@@ -259,5 +236,12 @@ let g:lightline = {
     \'enable': {
         \ 'statusline': 1,
         \ 'tabline': 0
-        \ } 
-    \}
+        \ },
+    \ 'active': {
+        \   'left': [ [ 'mode', 'paste' ],
+        \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+        \ },
+    \ 'component_function': {
+        \   'gitbranch': 'fugitive#head'
+        \ },
+\}
