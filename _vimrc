@@ -197,11 +197,10 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 map <C-a> :NERDTreeToggle<CR>
 " Use deoplete
-let g:deoplete#auto_complete_delay = 500
 let g:deoplete#on_insert_enter = 0
 let g:deoplete#on_text_changed_i=0
-let g:deoplete#file#enable_buffer_path = 1
-let g:deoplete#enable_refresh_always = 0
+let g:deoplete#custom#var = 1
+let g:deoplete#custom#option = 0
 let g:neosnippet#disable_runtime_snippets = {
 \   '_' : 1,
 \ }  
