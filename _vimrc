@@ -197,20 +197,21 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 map <C-a> :NERDTreeToggle<CR>
 " Use deoplete
-let g:deoplete#on_insert_enter = 0
-let g:deoplete#on_text_changed_i=0
-let g:deoplete#custom#var = 1
-let g:deoplete#custom#option = 0
-let g:neosnippet#disable_runtime_snippets = {
-\   '_' : 1,
-\ }  
+"let g:deoplete#on_insert_enter = 0
+"let g:deoplete#on_text_changed_i=0
+"let g:deoplete#custom#var = 1
+"let g:deoplete#custom#option = 0
+"let g:neosnippet#disable_runtime_snippets = {
+"\   '_' : 1,
+"\ }  
 let g:neosnippet#snippets_directory='~/.vim/snippets' 
+let g:neosnippet#disable_runtime_snippets = 1
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_or_jump)
-nmap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+
 " SuperTab like snippets behavior.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
 "imap <expr><TAB>
@@ -236,9 +237,10 @@ let g:LanguageClient_serverCommands = {
   \ 'c': ['clangd'],
   \ 'cpp': ['clangd'],
   \ }
-nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
-nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
-nnoremap <silent> rn :call LanguageClient#textDocument_rename()<CR>
+set completefunc=LanguageClient#complete
+"nmap <silent> K :call LanguageClient#textDocument_hover()<CR>
+"nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+"nnoremap <silent> rn :call LanguageClient#textDocument_rename()<CR>
 " lightline settings
 let g:lightline = {
     \'enable': {
