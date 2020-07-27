@@ -40,7 +40,6 @@ call plug#end()
 set t_Co=256
 set background=dark
 set laststatus=2
-"colorscheme hybrid
 colorscheme iceberg
 ""filetype plugin on 
 syntax enable
@@ -195,29 +194,39 @@ augroup END
 " NERDTreeに関する設定
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-map <C-a> :NERDTreeToggle<CR>
+noremap <C-a> :NERDTreeToggle<CR>
+
+" LSP configuration
+let g:LanguageClient_serverCommands = {
+  \ 'c': ['clangd'],
+  \ 'cpp': ['clangd'],
+  \ }
+"set completefunc=LanguageClient#complete
+nmap <silent>K <Plug>(lcn-hover)
+nmap <silent> gd <Plug>(lcn-definition)
+nmap <silent> <C-r> <Plug>(lcn-rename)
+
 " Use deoplete
-"let g:deoplete#on_insert_enter = 0
-"let g:deoplete#on_text_changed_i=0
-"let g:deoplete#custom#var = 1
-"let g:deoplete#custom#option = 0
-"let g:neosnippet#disable_runtime_snippets = {
-"\   '_' : 1,
-"\ }  
+let g:deoplete#options#on_insert_enter = 0
+let g:deoplete#options#on_text_changed_i = 0
+let g:deoplete#options#refresh_always = 0
+let g:neosnippet#disable_runtime_snippets = {
+\   '_' : 1,
+\ }  
 let g:neosnippet#snippets_directory='~/.vim/snippets' 
-let g:neosnippet#disable_runtime_snippets = 1
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
+let g:neosnippet#enable_complete_done = 1
 
 " SuperTab like snippets behavior.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-"imap <expr><TAB>
-" \ pumvisible() ? "\<C-n>" :
-" \ neosnippet#expandable_or_jumpable() ?
-" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+imap <expr><TAB>
+ \ pumvisible() ? "\<C-n>" :
+ \ neosnippet#expandable_or_jumpable() ?
+ \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
@@ -232,15 +241,7 @@ let g:vimtex_fold_enabled = 0
 " deoplete-jediの設定
 let g:deoplete#sources#jedi#enable_typeinfo = 0 " disable type information of completions
 let g:deoplete#sources#jedi#python_path = '/anaconda3/bin/python'
-" LSP configuration
-let g:LanguageClient_serverCommands = {
-  \ 'c': ['clangd'],
-  \ 'cpp': ['clangd'],
-  \ }
-set completefunc=LanguageClient#complete
-"nmap <silent> K :call LanguageClient#textDocument_hover()<CR>
-"nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
-"nnoremap <silent> rn :call LanguageClient#textDocument_rename()<CR>
+
 " lightline settings
 let g:lightline = {
     \'enable': {
