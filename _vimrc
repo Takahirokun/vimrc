@@ -3,6 +3,8 @@ augroup MyAutoCmd
     autocmd!
 augroup END
 
+set pyxversion=3
+
 " プラグイン
 call plug#begin('~/.vim/plugged')
 
@@ -28,10 +30,12 @@ Plug 'autozimu/LanguageClient-neovim', {
     \ 'do': 'bash install.sh',
     \ }
 
+Plug 'JuliaEditorSupport/julia-vim'
+
 Plug 'tpope/vim-fugitive'
 
 Plug 'itchyny/lightline.vim'
-
+                           
 Plug 'cocopon/iceberg.vim'
 
 call plug#end()
@@ -44,8 +48,8 @@ colorscheme iceberg
 ""filetype plugin on 
 syntax enable
 set number              " 行番号の表示
-set ruler               " カーソル位置が右下に表示される
-set wildmenu            " コマンドライン補完が強力になる
+set ruler               " カーソル位置が右下に表示
+set wildmenu            " コマンドライン補完を表示する
 set showcmd             " コマンドを画面の最下部に表示する
 set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
@@ -57,12 +61,12 @@ highlight NonText ctermbg=none
 highlight LineNr ctermbg=none
 highlight Folded ctermbg=none
 highlight EndOfBuffer ctermbg=none 
-" 前時代的スクリーンベルを無効化
+" スクリーンベルを無効化
 set t_vb=
 set novisualbell
 " terminal
 noremap ter :ter ++curwin
-set termwinkey=<C-L>
+"set termwinkey=<C-L>
 " カーソルを挿入モードとノーマルとで切り替え
 if has('vim_starting')
     " 挿入モード時に非点滅の縦棒タイプのカーソル
@@ -74,6 +78,7 @@ if has('vim_starting')
 endif
 
 """ 編集関係
+"set fileencodings=ucs-bom,iso-2022-jp-3,iso-2022-jp,eucjp-ms,euc-jisx0213,euc-jp,sjis,cp932,utf-8 " エンコード
 set infercase           " 補完時に大文字小文字を区別しない
 set virtualedit=all     " カーソルを文字が存在しない部分でも動けるようにする
 set hidden              " バッファを閉じる代わりに隠す（Undo履歴を残すため）
@@ -92,8 +97,7 @@ set shiftround          " '<'や'>'でインデントする際に'shiftwidth'の
 set matchpairs& matchpairs+=<:>
 " バックスペースでなんでも消せるようにする
 set backspace=indent,eol,start
-" クリップボードをデフォルトのレジスタとして指定。後にYankRingを使うので
-" 'unnamedplus'が存在しているかどうかで設定を分ける必要がある
+" クリップボードをデフォルトのレジスタとして指定。
 if has('unnamedplus')
     set clipboard& clipboard+=unnamedplus,unnamed
 else
@@ -147,8 +151,6 @@ set incsearch           " インクリメンタルサーチ
 set hlsearch            " 検索マッチテキストをハイライト
 
 """ マクロおよびキー設定
-" ESCを二回押すことでハイライトを消す
-nmap <silent> <Esc><Esc> :nohlsearch<CR>
 " カーソル下の単語を * で検索
 vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v, '\/'), "\n", '\\n', 'g')<CR><CR>
 " [ と打ったら [] って入力されてしかも括弧の中にいる(以下同様)
@@ -182,7 +184,7 @@ nnoremap <S-Right> <C-w>>
 nnoremap <S-d>    <C-w>+
 nnoremap <S-u>  <C-w>-
 " タブの作成・タブ間の移動
-noremap st :tabnew
+noremap tn :tabnew
 noremap <C-n> gt
 nnoremap <C-p> gT
 "C/C++のコンパイルを自動的に行う
@@ -202,9 +204,9 @@ let g:LanguageClient_serverCommands = {
   \ 'cpp': ['clangd'],
   \ }
 "set completefunc=LanguageClient#complete
-nmap <silent>K <Plug>(lcn-hover)
+"nmap <silent>K <Plug>(lcn-hover)
 nmap <silent> gd <Plug>(lcn-definition)
-nmap <silent> <C-r> <Plug>(lcn-rename)
+nmap <silent> rn <Plug>(lcn-rename)
 
 " Use deoplete
 let g:deoplete#options#on_insert_enter = 0
@@ -219,16 +221,21 @@ let g:neosnippet#snippets_directory='~/.vim/snippets'
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
-let g:neosnippet#enable_complete_done = 1
 
 " SuperTab like snippets behavior.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-imap <expr><TAB>
- \ pumvisible() ? "\<C-n>" :
- \ neosnippet#expandable_or_jumpable() ?
- \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+"imap <expr><TAB>
+"\ pumvisible() ? "\<C-n>" :
+" \ neosnippet#expandable_or_jumpable() ?
+" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+" For conceal markers.
+"if has('conceal')
+"  set conceallevel=2 concealcursor=niv
+"endif
+let g:neosnippet#enable_complete_done = 1
 
 "" vimtex
 hi texMath ctermfg=149
@@ -238,9 +245,10 @@ let g:vimtex_fold_enabled = 0
   call deoplete#custom#var('omni', 'input_patterns', {
           \ 'tex': g:vimtex#re#deoplete
           \})  
-" deoplete-jediの設定
+let g:tex_flavor = "latex"
+"" deoplete-jediの設定
 let g:deoplete#sources#jedi#enable_typeinfo = 0 " disable type information of completions
-let g:deoplete#sources#jedi#python_path = '/anaconda3/bin/python'
+let g:deoplete#sources#jedi#python_path = '/anaconda3/bin/python3.7'
 
 " lightline settings
 let g:lightline = {
