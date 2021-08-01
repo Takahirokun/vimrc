@@ -3,8 +3,6 @@ augroup MyAutoCmd
     autocmd!
 augroup END
 
-set pyxversion=3
-
 " プラグイン
 call plug#begin('~/.vim/plugged')
 
@@ -22,8 +20,6 @@ let g:deoplete#enable_at_startup = 1
 Plug 'Shougo/neosnippet.vim'
 
 Plug 'lervag/vimtex'
-
-Plug 'deoplete-plugins/deoplete-jedi'
 
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
@@ -45,7 +41,7 @@ set t_Co=256
 set background=dark
 set laststatus=2
 colorscheme iceberg
-""filetype plugin on 
+filetype plugin on 
 syntax enable
 set number              " 行番号の表示
 set ruler               " カーソル位置が右下に表示
@@ -87,11 +83,8 @@ set showmatch           " 対応する括弧などをハイライト表示する
 set matchtime=3         " 対応括弧のハイライト表示を3秒にする
 set autoindent          " 改行時にインデントを引き継いで改行する
 set shiftwidth=4        " インデントにつかわれる空白の数
-au BufNewFile,BufRead *.yml set shiftwidth=2
 set softtabstop=4       " <Tab>押下時の空白数
-set expandtab           " <Tab>押下時に<Tab>ではなく、ホワイトスペースを挿入する
 set tabstop=4           " <Tab>が対応する空白の数
-au BufNewFile,BufRead *.yml set tabstop=2
 set shiftround          " '<'や'>'でインデントする際に'shiftwidth'の倍数に丸める
 " 対応括弧に'<'と'>'のペアを追加
 set matchpairs& matchpairs+=<:>
@@ -178,7 +171,7 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
-" Shift + 矢印でウィンドウサイズを変更
+" ウィンドウサイズを変更
 nnoremap <S-Left>  <C-w><
 nnoremap <S-Right> <C-w>>
 nnoremap <S-d>    <C-w>+
@@ -198,44 +191,31 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 noremap <C-a> :NERDTreeToggle<CR>
 
-" LSP configuration
-let g:LanguageClient_serverCommands = {
-  \ 'c': ['clangd'],
-  \ 'cpp': ['clangd'],
-  \ }
-"set completefunc=LanguageClient#complete
-"nmap <silent>K <Plug>(lcn-hover)
-nmap <silent> gd <Plug>(lcn-definition)
-nmap <silent> rn <Plug>(lcn-rename)
-
 " Use deoplete
 let g:deoplete#options#on_insert_enter = 0
 let g:deoplete#options#on_text_changed_i = 0
 let g:deoplete#options#refresh_always = 0
+
+" neosnippet settings
+let g:neosnippet#enable_complete_done = 1
 let g:neosnippet#disable_runtime_snippets = {
 \   '_' : 1,
-\ }  
+\ }   
 let g:neosnippet#snippets_directory='~/.vim/snippets' 
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
-
+imap <C-k> <Plug>(neosnippet_expand_or_jump)
+smap <C-k> <Plug>(neosnippet_expand_or_jump)
+xmap <C-k> <Plug>(neosnippet_expand_target)
+ 
 " SuperTab like snippets behavior.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-"imap <expr><TAB>
-"\ pumvisible() ? "\<C-n>" :
-" \ neosnippet#expandable_or_jumpable() ?
-" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+""imap <expr><TAB>
+""\ pumvisible() ? "\<C-n>" :
+"" \ neosnippet#expandable_or_jumpable() ?
+"" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-
-" For conceal markers.
-"if has('conceal')
-"  set conceallevel=2 concealcursor=niv
-"endif
-let g:neosnippet#enable_complete_done = 1
 
 "" vimtex
 hi texMath ctermfg=149
@@ -246,10 +226,17 @@ let g:vimtex_fold_enabled = 0
           \ 'tex': g:vimtex#re#deoplete
           \})  
 let g:tex_flavor = "latex"
-"" deoplete-jediの設定
-let g:deoplete#sources#jedi#enable_typeinfo = 0 " disable type information of completions
-let g:deoplete#sources#jedi#python_path = '/anaconda3/bin/python3.7'
 
+" LSP configuration
+let g:LanguageClient_serverCommands = {
+  \ 'c': ['clangd'],
+  \ 'cpp': ['clangd'],
+  \ }
+set completefunc=LanguageClient#complete
+nmap <silent>K <Plug>(lcn-hover)
+nmap <silent> gd <Plug>(lcn-definition)
+nmap <silent> rn <Plug>(lcn-rename)
+ 
 " lightline settings
 let g:lightline = {
     \'enable': {
