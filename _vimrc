@@ -8,23 +8,23 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'scrooloose/nerdtree'
 
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-  Plug 'Shougo/deoplete.nvim'
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-endif
-let g:deoplete#enable_at_startup = 1
+Plug 'Shougo/ddc.vim'
+Plug 'vim-denops/denops.vim'
 
-Plug 'Shougo/neosnippet.vim'
+" Install your sources
+Plug 'Shougo/ddc-around'
+
+" Install your filters
+Plug 'Shougo/ddc-matcher_head'
+Plug 'Shougo/ddc-sorter_rank'
+
+" lsp
+Plug 'prabirshrestha/vim-lsp'
+Plug 'mattn/vim-lsp-settings'
+
+Plug 'shun/ddc-vim-lsp'
 
 Plug 'lervag/vimtex'
-
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
 
 Plug 'JuliaEditorSupport/julia-vim'
 
@@ -34,14 +34,106 @@ Plug 'itchyny/lightline.vim'
                            
 Plug 'cocopon/iceberg.vim'
 
+Plug 'brglng/vim-im-select'
+
 call plug#end()
+
+" NERDTreeに関する設定
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif 
+noremap <C-a> :NERDTreeToggle<CR>
+
+" Customize global settings
+" Use around source.
+" https://github.com/Shougo/ddc-around
+call ddc#custom#patch_global('sources', ['around'])
+
+" Use matcher_head and sorter_rank.
+" https://github.com/Shougo/ddc-matcher_head
+" https://github.com/Shougo/ddc-sorter_rank
+call ddc#custom#patch_global('sourceOptions', {
+      \ '_': {
+      \   'matchers': ['matcher_head'],
+      \   'sorters': ['sorter_rank']},
+      \ })
+
+" Change source options
+call ddc#custom#patch_global('sourceOptions', {
+      \ 'around': {'mark': 'A'},
+      \ })
+call ddc#custom#patch_global('sourceParams', {
+      \ 'around': {'maxSize': 500},
+      \ })
+
+" Customize settings on a filetype
+""call ddc#custom#patch_filetype(['c', 'cpp'], 'sources', ['around', 'clangd'])
+""call ddc#custom#patch_filetype(['c', 'cpp'], 'sourceOptions', {
+""      \ 'clangd': {'mark': 'C'},
+""      \ })
+""call ddc#custom#patch_filetype('markdown', 'sourceParams', {
+""      \ 'around': {'maxSize': 100},
+""      \ })
+""
+
+" Mappings
+
+" <TAB>: completion.
+inoremap <silent><expr> <TAB>
+\ pumvisible() ? '<C-n>' :
+\ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
+\ '<TAB>' : ddc#manual_complete()
+
+" <S-TAB>: completion back.
+inoremap <expr><S-TAB>  pumvisible() ? '<C-p>' : '<C-h>'
+
+" lsp settings
+call ddc#custom#patch_global('sources', ['ddc-vim-lsp'])
+    call ddc#custom#patch_global('sourceOptions', {
+        \ 'ddc-vim-lsp': {
+        \   'matchers': ['matcher_head'],
+        \   'mark': 'lsp',
+        \ },
+        \ })
+let g:lsp_diagnostics_enabled = 1
+let g:lsp_diagnostics_echo_cursor = 1
+
+" Use ddc.
+call ddc#enable()
+
+"" vimtex
+hi texMath ctermfg=149
+let g:vimtex_fold_enabled = 0
+""" vimtexとdeopleteを調和させる
+""" This is new style
+""  call deoplete#custom#var('omni', 'input_patterns', {
+""          \ 'tex': g:vimtex#re#deoplete
+""          \})  
+""let g:tex_flavor = "latex"
+
+" lightline settings
+let g:lightline = {
+    \'enable': {
+        \ 'statusline': 1,
+        \ 'tabline': 0
+        \ },
+    \ 'active': {
+        \   'left': [ [ 'mode', 'paste' ],
+        \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+        \ },
+    \ 'component_function': {
+        \   'gitbranch': 'fugitive#head'
+        \ },
+\}
+
+" vim-im-select(need im-select)
+let g:im_select_default = 'com.apple.inputmethod.Kotoeri.RomajiTyping.Roman'
 
 " 表示関係
 set t_Co=256
 set background=dark
 set laststatus=2
 colorscheme iceberg
-filetype plugin on 
+filetype plugin indent on 
 syntax enable
 set number              " 行番号の表示
 set ruler               " カーソル位置が右下に表示
@@ -185,69 +277,4 @@ augroup setAutoCompile
     autocmd!
     autocmd BufWritePost *.c :!gcc %:p
     autocmd BufWritePost *.cpp :!g++ -std=c++14 %:p
-augroup END
-" NERDTreeに関する設定
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-noremap <C-a> :NERDTreeToggle<CR>
-
-" Use deoplete
-let g:deoplete#options#on_insert_enter = 0
-let g:deoplete#options#on_text_changed_i = 0
-let g:deoplete#options#refresh_always = 0
-
-" neosnippet settings
-let g:neosnippet#enable_complete_done = 1
-let g:neosnippet#disable_runtime_snippets = {
-\   '_' : 1,
-\ }   
-let g:neosnippet#snippets_directory='~/.vim/snippets' 
-" Plugin key-mappings.
-" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-imap <C-k> <Plug>(neosnippet_expand_or_jump)
-smap <C-k> <Plug>(neosnippet_expand_or_jump)
-xmap <C-k> <Plug>(neosnippet_expand_target)
- 
-" SuperTab like snippets behavior.
-" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-""imap <expr><TAB>
-""\ pumvisible() ? "\<C-n>" :
-"" \ neosnippet#expandable_or_jumpable() ?
-"" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-
-"" vimtex
-hi texMath ctermfg=149
-let g:vimtex_fold_enabled = 0
- " vimtexとdeopleteを調和させる
- " This is new style
-  call deoplete#custom#var('omni', 'input_patterns', {
-          \ 'tex': g:vimtex#re#deoplete
-          \})  
-let g:tex_flavor = "latex"
-
-" LSP configuration
-let g:LanguageClient_serverCommands = {
-  \ 'c': ['clangd'],
-  \ 'cpp': ['clangd'],
-  \ }
-set completefunc=LanguageClient#complete
-nmap <silent>K <Plug>(lcn-hover)
-nmap <silent> gd <Plug>(lcn-definition)
-nmap <silent> rn <Plug>(lcn-rename)
- 
-" lightline settings
-let g:lightline = {
-    \'enable': {
-        \ 'statusline': 1,
-        \ 'tabline': 0
-        \ },
-    \ 'active': {
-        \   'left': [ [ 'mode', 'paste' ],
-        \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-        \ },
-    \ 'component_function': {
-        \   'gitbranch': 'fugitive#head'
-        \ },
-\}
+augroup END 
