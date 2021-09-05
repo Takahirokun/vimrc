@@ -21,24 +21,23 @@ Plug 'Shougo/ddc-sorter_rank'
 " lsp
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
-
 Plug 'shun/ddc-vim-lsp'
-
-Plug 'lervag/vimtex'
 
 Plug 'JuliaEditorSupport/julia-vim'
 
+" git
 Plug 'tpope/vim-fugitive'
 
+" vim theme
 Plug 'itchyny/lightline.vim'
-                           
 Plug 'cocopon/iceberg.vim'
 
+" IME 
 Plug 'brglng/vim-im-select'
 
 call plug#end()
 
-" NERDTreeに関する設定
+" NERDTree settings
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif 
 noremap <C-a> :NERDTreeToggle<CR>
@@ -70,10 +69,10 @@ call ddc#custom#patch_global('sourceParams', {
 ""call ddc#custom#patch_filetype(['c', 'cpp'], 'sourceOptions', {
 ""      \ 'clangd': {'mark': 'C'},
 ""      \ })
-""call ddc#custom#patch_filetype('markdown', 'sourceParams', {
-""      \ 'around': {'maxSize': 100},
-""      \ })
-""
+call ddc#custom#patch_filetype('markdown', 'sourceParams', {
+      \ 'around': {'maxSize': 100},
+      \ })
+
 
 " Mappings
 
@@ -100,16 +99,6 @@ let g:lsp_diagnostics_echo_cursor = 1
 " Use ddc.
 call ddc#enable()
 
-"" vimtex
-hi texMath ctermfg=149
-let g:vimtex_fold_enabled = 0
-""" vimtexとdeopleteを調和させる
-""" This is new style
-""  call deoplete#custom#var('omni', 'input_patterns', {
-""          \ 'tex': g:vimtex#re#deoplete
-""          \})  
-""let g:tex_flavor = "latex"
-
 " lightline settings
 let g:lightline = {
     \'enable': {
@@ -128,7 +117,7 @@ let g:lightline = {
 " vim-im-select(need im-select)
 let g:im_select_default = 'com.apple.inputmethod.Kotoeri.RomajiTyping.Roman'
 
-" 表示関係
+" display
 set t_Co=256
 set background=dark
 set laststatus=2

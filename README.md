@@ -1,2 +1,2 @@
 # vimrc
-.vimrcの管理
+ - vimrcの管理
