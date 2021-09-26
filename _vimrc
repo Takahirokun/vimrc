@@ -11,10 +11,10 @@ Plug 'scrooloose/nerdtree'
 Plug 'Shougo/ddc.vim'
 Plug 'vim-denops/denops.vim'
 
-" Install your sources
+" Install sources
 Plug 'Shougo/ddc-around'
 
-" Install your filters
+" Install filters
 Plug 'Shougo/ddc-matcher_head'
 Plug 'Shougo/ddc-sorter_rank'
 
@@ -32,50 +32,48 @@ Plug 'tpope/vim-fugitive'
 Plug 'itchyny/lightline.vim'
 Plug 'cocopon/iceberg.vim'
 
-" IME 
-Plug 'brglng/vim-im-select'
+" skk
+"Plug 'kuuote/denops-skkeleton.vim'
+Plug 'tyru/eskk.vim'
 
 call plug#end()
 
 " NERDTree settings
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif 
-noremap <C-a> :NERDTreeToggle<CR>
+noremap <C-@> :NERDTreeToggle<CR>
 
 " Customize global settings
-" Use around source.
-" https://github.com/Shougo/ddc-around
-call ddc#custom#patch_global('sources', ['around'])
+" sources.
+call ddc#custom#patch_global('sources', [
+			\ 'vim-lsp',
+			\ 'eskk',
+			\ 'around',
+			\ ])
 
-" Use matcher_head and sorter_rank.
-" https://github.com/Shougo/ddc-matcher_head
-" https://github.com/Shougo/ddc-sorter_rank
+"" source options.
 call ddc#custom#patch_global('sourceOptions', {
       \ '_': {
       \   'matchers': ['matcher_head'],
-      \   'sorters': ['sorter_rank']},
-      \ })
+      \   'sorters': ['sorter_rank'],
+	  \ },
+      \ 'eskk': {'mark': 'eskk', 'matchers': [], 'sorters': []},
+	  \ 'around': {'mark': 'A'},
+	  \ 'vim-lsp': {
+      \   'mark': 'lsp',
+	  \   'minAutoCompleteLength': 1,
+      \ }, 
+	  \ })
 
-" Change source options
-call ddc#custom#patch_global('sourceOptions', {
-      \ 'around': {'mark': 'A'},
-      \ })
+"" source parameters.
 call ddc#custom#patch_global('sourceParams', {
       \ 'around': {'maxSize': 500},
       \ })
-
-" Customize settings on a filetype
-""call ddc#custom#patch_filetype(['c', 'cpp'], 'sources', ['around', 'clangd'])
-""call ddc#custom#patch_filetype(['c', 'cpp'], 'sourceOptions', {
-""      \ 'clangd': {'mark': 'C'},
-""      \ })
 call ddc#custom#patch_filetype('markdown', 'sourceParams', {
       \ 'around': {'maxSize': 100},
       \ })
 
-
-" Mappings
-
+"" Mappings
 " <TAB>: completion.
 inoremap <silent><expr> <TAB>
 \ pumvisible() ? '<C-n>' :
@@ -86,15 +84,33 @@ inoremap <silent><expr> <TAB>
 inoremap <expr><S-TAB>  pumvisible() ? '<C-p>' : '<C-h>'
 
 " lsp settings
-call ddc#custom#patch_global('sources', ['ddc-vim-lsp'])
-    call ddc#custom#patch_global('sourceOptions', {
-        \ 'ddc-vim-lsp': {
-        \   'matchers': ['matcher_head'],
-        \   'mark': 'lsp',
-        \ },
-        \ })
 let g:lsp_diagnostics_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
+
+" eskk
+" https://alwei.hatenadiary.org/entry/20111029/1319905783
+let g:eskk#directory = "~/.eskk"
+let g:eskk#dictionary = { 'path': "~/.skk-jisyo", 'sorted': 0, 'encoding': 'utf-8', }
+let g:eskk#large_dictionary = { 'path': "~/.eskk/SKK-JISYO.L", 'sorted': 1, 'encoding': 'euc-jp', }
+imap <C-j> <Plug>(eskk:toggle)
+cmap <C-j> <Plug>(eskk:toggle)
+"let g:eskk#enable_completion = 1
+"set imdisable
+
+" skkeleton.
+"function! s:skkeleton_init() abort
+"	call skkeleton#config({
+"	\ 'debug': v:true,
+"	\ 'globalJisyo': "/Users/nakayatakahiro/.eskk/SKK-JISYO.L",
+"	\ 'userJisyo': "/Users/nakayatakahiro/.skkeleton"
+"	\ })
+"	call skkeleton#register_kanatable('rom', {
+"	\ "z\<Space>": ["\u3000", ''],
+"	\ })
+"endfunction 
+"autocmd User skkeleton-initialize-pre call s:skkeleton_init()      
+"imap <C-j> <Plug>(skkeleton-toggle)
+"cmap <C-j> <Plug>(skkeleton-toggle)
 
 " Use ddc.
 call ddc#enable()
@@ -114,8 +130,9 @@ let g:lightline = {
         \ },
 \}
 
-" vim-im-select(need im-select)
-let g:im_select_default = 'com.apple.inputmethod.Kotoeri.RomajiTyping.Roman'
+" debug
+"set verbosefile=/tmp/vim.log
+"set verbose=20
 
 " display
 set t_Co=256
