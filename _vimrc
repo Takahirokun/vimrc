@@ -33,8 +33,8 @@ Plug 'itchyny/lightline.vim'
 Plug 'cocopon/iceberg.vim'
 
 " skk
-"Plug 'kuuote/denops-skkeleton.vim'
-Plug 'tyru/eskk.vim'
+Plug 'kuuote/denops-skkeleton.vim'
+"Plug 'tyru/eskk.vim'
 
 call plug#end()
 
@@ -48,6 +48,7 @@ noremap <C-@> :NERDTreeToggle<CR>
 call ddc#custom#patch_global('sources', [
 			\ 'vim-lsp',
 			\ 'eskk',
+			\ 'skkeleton',
 			\ 'around',
 			\ ])
 
@@ -58,6 +59,7 @@ call ddc#custom#patch_global('sourceOptions', {
       \   'sorters': ['sorter_rank'],
 	  \ },
       \ 'eskk': {'mark': 'eskk', 'matchers': [], 'sorters': []},
+	  \ 'skkeleton': {'mark': 'skkeleton', 'matchers': ['skkeleton'], 'sorters': []}, 
 	  \ 'around': {'mark': 'A'},
 	  \ 'vim-lsp': {
       \   'mark': 'lsp',
@@ -89,28 +91,32 @@ let g:lsp_diagnostics_echo_cursor = 1
 
 " eskk
 " https://alwei.hatenadiary.org/entry/20111029/1319905783
-let g:eskk#directory = "~/.eskk"
-let g:eskk#dictionary = { 'path': "~/.skk-jisyo", 'sorted': 0, 'encoding': 'utf-8', }
-let g:eskk#large_dictionary = { 'path': "~/.eskk/SKK-JISYO.L", 'sorted': 1, 'encoding': 'euc-jp', }
-imap <C-j> <Plug>(eskk:toggle)
-cmap <C-j> <Plug>(eskk:toggle)
+"let g:eskk#directory = "~/.eskk"
+"let g:eskk#dictionary = { 'path': "~/.skk-jisyo", 'sorted': 0, 'encoding': 'utf-8', }
+"let g:eskk#large_dictionary = { 'path': "~/.eskk/SKK-JISYO.L", 'sorted': 1, 'encoding': 'euc-jp', }
+"let g:eskk#egg_like_newline = 1
 "let g:eskk#enable_completion = 1
+"imap <C-j> <Plug>(eskk:toggle)
+"cmap <C-j> <Plug>(eskk:toggle)
 "set imdisable
 
 " skkeleton.
-"function! s:skkeleton_init() abort
-"	call skkeleton#config({
-"	\ 'debug': v:true,
-"	\ 'globalJisyo': "/Users/nakayatakahiro/.eskk/SKK-JISYO.L",
-"	\ 'userJisyo': "/Users/nakayatakahiro/.skkeleton"
-"	\ })
-"	call skkeleton#register_kanatable('rom', {
-"	\ "z\<Space>": ["\u3000", ''],
-"	\ })
-"endfunction 
-"autocmd User skkeleton-initialize-pre call s:skkeleton_init()      
-"imap <C-j> <Plug>(skkeleton-toggle)
-"cmap <C-j> <Plug>(skkeleton-toggle)
+imap <C-j> <Plug>(skkeleton-toggle)
+cmap <C-j> <Plug>(skkeleton-toggle)
+"let g:skkeleton#debug = v:true
+call skkeleton#config({
+	\ 'globalJisyo': "/Users/nakayatakahiro/.eskk/SKK-JISYO.L",
+	\ 'eggLikeNewline': v:true,
+	\ })
+call skkeleton#register_kanatable('rom', {
+	\ "z\<Space>": ["\u3000", ''],
+	\ })
+"autocmd MyAutoCmd User skkeleton-initialize-pre call s:skkeleton_pre()      
+"function! s:skkeleton_pre() abort
+"    " Overwrite sources
+"    let s:prev_buffer_config = ddc#custom#get_buffer()
+"    call ddc#custom#patch_buffer('sources', ['skkeleton'])
+"endfunction
 
 " Use ddc.
 call ddc#enable()
@@ -132,7 +138,7 @@ let g:lightline = {
 
 " debug
 "set verbosefile=/tmp/vim.log
-"set verbose=20
+"set verbose=0
 
 " display
 set t_Co=256
