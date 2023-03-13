@@ -8,8 +8,21 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'scrooloose/nerdtree'
 
+" auto completion and fuzzy finder
 Plug 'Shougo/ddc.vim'
+Plug 'Shougo/ddu.vim'
 Plug 'vim-denops/denops.vim'
+
+" ddu's ui, source, filter, and kind
+Plug 'Shougo/ddu-ui-ff'
+Plug 'Shougo/ddu-source-file_rec'
+"Plug 'Shougo/ddu-source-buffer'
+"Plug 'Shougo/ddu-source-register'
+Plug 'Shougo/ddu-filter-matcher_substring'
+Plug 'Shougo/ddu-kind-file'
+
+" ddc's UI
+Plug 'Shougo/ddc-ui-native'
 
 " Install sources
 Plug 'Shougo/ddc-around'
@@ -20,13 +33,19 @@ Plug 'Shougo/ddc-sorter_rank'
 
 " lsp
 Plug 'prabirshrestha/vim-lsp'
-Plug 'mattn/vim-lsp-settings'
-Plug 'shun/ddc-vim-lsp'
-
+Plug 'mattn/vim-lsp-settings' 
+Plug 'shun/ddc-vim-lsp' 
 Plug 'JuliaEditorSupport/julia-vim'
+
+" snippets
+Plug 'hrsh7th/vim-vsnip'
+Plug 'hrsh7th/vim-vsnip-integ'
 
 " git
 Plug 'tpope/vim-fugitive'
+
+" markdown preview
+Plug 'kat0h/bufpreview.vim'
 
 " vim theme
 Plug 'itchyny/lightline.vim'
@@ -43,12 +62,16 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif 
 noremap <C-@> :NERDTreeToggle<CR>
 
+" ddc settings
 " Customize global settings
+" UI
+call ddc#custom#patch_global('ui', 'native')
+
 " sources.
 call ddc#custom#patch_global('sources', [
 			\ 'vim-lsp',
-			\ 'eskk',
 			\ 'skkeleton',
+			\ 'vsnip',
 			\ 'around',
 			\ ])
 
@@ -58,12 +81,13 @@ call ddc#custom#patch_global('sourceOptions', {
       \   'matchers': ['matcher_head'],
       \   'sorters': ['sorter_rank'],
 	  \ },
-      \ 'eskk': {'mark': 'eskk', 'matchers': [], 'sorters': []},
 	  \ 'skkeleton': {'mark': 'skkeleton', 'matchers': ['skkeleton'], 'sorters': []}, 
 	  \ 'around': {'mark': 'A'},
+	  \ 'vsnip': {'mark': 'snippet'},
 	  \ 'vim-lsp': {
       \   'mark': 'lsp',
 	  \   'minAutoCompleteLength': 1,
+	  \   'forceCompletionPattern': '\.',
       \ }, 
 	  \ })
 
@@ -85,9 +109,92 @@ inoremap <silent><expr> <TAB>
 " <S-TAB>: completion back.
 inoremap <expr><S-TAB>  pumvisible() ? '<C-p>' : '<C-h>'
 
+" ddu settings
+" You must set the default ui.
+" Note: ff ui
+call ddu#custom#patch_global({
+	\ 'ui': 'ff',
+	\   'kindOptions': {
+    \     'file': {
+    \       'defaultAction': 'open',
+    \     },
+	\   },
+	\ 'sources': [{'name': 'file_rec', 'params': {}}],
+	\   'sourceOptions': {
+    \     '_': {
+    \       'matchers': ['matcher_substring'],
+    \     },
+	\   },
+	\ 'filterParams': {
+    \  'matcher_substring': {
+    \    'highlightMatched': 'Title',
+    \  },
+    \ 
+	\},
+	\'uiParams': {
+	\   'ff': {
+ 	\	'startFilter': v:true,
+	\},
+	\},  
+ 	\})
+
+autocmd FileType ddu-ff call s:ddu_my_settings()
+function! s:ddu_my_settings() abort
+  nnoremap <buffer><silent> <CR>
+        \ <Cmd>call ddu#ui#ff#do_action('itemAction')<CR>
+  nnoremap <buffer><silent> <Space>
+        \ <Cmd>call ddu#ui#ff#do_action('toggleSelectItem')<CR>
+  nnoremap <buffer><silent> i
+        \ <Cmd>call ddu#ui#ff#do_action('openFilterWindow')<CR>
+  nnoremap <buffer><silent> q
+        \ <Cmd>call ddu#ui#ff#do_action('quit')<CR>
+endfunction
+
+autocmd FileType ddu-ff-filter call s:ddu_filter_my_settings()
+function! s:ddu_filter_my_settings() abort
+  inoremap <buffer><silent> <CR>
+  \ <Esc><Cmd>call ddu#ui#ff#close()<CR>
+  nnoremap <buffer><silent> <CR>
+  \ <Cmd>call ddu#ui#ff#close()<CR>
+  nnoremap <buffer><silent> q
+  \ <Cmd>call ddu#ui#ff#close()<CR>
+endfunction
+
+nmap <silent> ;f <Cmd>call ddu#start({})<CR>
+""nmap <silent> ;r <Cmd>call ddu#start({'name':'register'})<CR>
+"nmap <silent> ;b <Cmd>call ddu#start({'name':'buffer'})<CR>
+
 " lsp settings
 let g:lsp_diagnostics_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
+
+" snippet
+" NOTE: You can use other key to expand snippet.
+" Expand
+imap <expr> <C-o>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-o>'
+smap <expr> <C-o>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-o>'
+
+" Expand or jump
+imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+
+" Jump forward or backward
+imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+
+" Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
+" See https://github.com/hrsh7th/vim-vsnip/pull/50
+nmap        s   <Plug>(vsnip-select-text)
+xmap        s   <Plug>(vsnip-select-text)
+nmap        S   <Plug>(vsnip-cut-text)
+xmap        S   <Plug>(vsnip-cut-text)
+
+" If you want to use snippet for multiple filetypes, you can `g:vsnip_filetypes` for it.
+let g:vsnip_filetypes = {}
+let g:vsnip_filetypes.javascriptreact = ['javascript']
+let g:vsnip_filetypes.typescriptreact = ['typescript']
 
 " eskk
 " https://alwei.hatenadiary.org/entry/20111029/1319905783
@@ -111,12 +218,12 @@ call skkeleton#config({
 call skkeleton#register_kanatable('rom', {
 	\ "z\<Space>": ["\u3000", ''],
 	\ })
-"autocmd MyAutoCmd User skkeleton-initialize-pre call s:skkeleton_pre()      
-"function! s:skkeleton_pre() abort
-"    " Overwrite sources
-"    let s:prev_buffer_config = ddc#custom#get_buffer()
-"    call ddc#custom#patch_buffer('sources', ['skkeleton'])
-"endfunction
+autocmd MyAutoCmd User skkeleton-initialize-pre call s:skkeleton_pre()      
+function! s:skkeleton_pre() abort
+    " Overwrite sources
+    let s:prev_buffer_config = ddc#custom#get_buffer()
+    call ddc#custom#patch_buffer('sources', ['skkeleton'])
+endfunction
 
 " Use ddc.
 call ddc#enable()
@@ -284,6 +391,8 @@ nnoremap <S-u>  <C-w>-
 noremap tn :tabnew
 noremap <C-n> gt
 nnoremap <C-p> gT
+" grepで自動的にquickfix-windowを開く
+autocmd QuickFixCmdPost *grep* cwindow
 "C/C++のコンパイルを自動的に行う
 augroup setAutoCompile
     autocmd!
