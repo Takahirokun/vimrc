@@ -1,4 +1,4 @@
-""" release autogroup in MyAutoCmd
+" release autogroup in MyAutoCmd
 augroup MyAutoCmd
     autocmd!
 augroup END
@@ -333,13 +333,13 @@ function MyTabLine()
 endfunction
 set tabline=%!MyTabLine()
 
-""" 検索関係
+" 検索関係
 set ignorecase          " 大文字小文字を区別しない
 set smartcase           " 検索文字に大文字がある場合は大文字小文字を区別
 set incsearch           " インクリメンタルサーチ
 set hlsearch            " 検索マッチテキストをハイライト
 
-""" マクロおよびキー設定
+" マクロおよびキー設定
 " カーソル下の単語を * で検索
 vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v, '\/'), "\n", '\\n', 'g')<CR><CR>
 " [ と打ったら [] って入力されてしかも括弧の中にいる(以下同様)
