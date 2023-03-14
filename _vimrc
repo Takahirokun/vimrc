@@ -16,8 +16,6 @@ Plug 'vim-denops/denops.vim'
 " ddu's ui, source, filter, and kind
 Plug 'Shougo/ddu-ui-ff'
 Plug 'Shougo/ddu-source-file_rec'
-"Plug 'Shougo/ddu-source-buffer'
-"Plug 'Shougo/ddu-source-register'
 Plug 'Shougo/ddu-filter-matcher_substring'
 Plug 'Shougo/ddu-kind-file'
 
@@ -53,7 +51,6 @@ Plug 'cocopon/iceberg.vim'
 
 " skk
 Plug 'kuuote/denops-skkeleton.vim'
-"Plug 'tyru/eskk.vim'
 
 call plug#end()
 
@@ -196,23 +193,12 @@ let g:vsnip_filetypes = {}
 let g:vsnip_filetypes.javascriptreact = ['javascript']
 let g:vsnip_filetypes.typescriptreact = ['typescript']
 
-" eskk
-" https://alwei.hatenadiary.org/entry/20111029/1319905783
-"let g:eskk#directory = "~/.eskk"
-"let g:eskk#dictionary = { 'path': "~/.skk-jisyo", 'sorted': 0, 'encoding': 'utf-8', }
-"let g:eskk#large_dictionary = { 'path': "~/.eskk/SKK-JISYO.L", 'sorted': 1, 'encoding': 'euc-jp', }
-"let g:eskk#egg_like_newline = 1
-"let g:eskk#enable_completion = 1
-"imap <C-j> <Plug>(eskk:toggle)
-"cmap <C-j> <Plug>(eskk:toggle)
-"set imdisable
-
 " skkeleton.
 imap <C-j> <Plug>(skkeleton-toggle)
 cmap <C-j> <Plug>(skkeleton-toggle)
 "let g:skkeleton#debug = v:true
 call skkeleton#config({
-	\ 'globalJisyo': "/Users/nakayatakahiro/.eskk/SKK-JISYO.L",
+	\ 'globalJisyo': "~/.eskk/SKK-JISYO.L",
 	\ 'eggLikeNewline': v:true,
 	\ })
 call skkeleton#register_kanatable('rom', {
@@ -341,8 +327,7 @@ function MyTabLine()
     let s.= '%#TabLineFill#|'
     endfor
 
-    " 最後のタブページの後は TabLineFill で埋め、タブページ番号をリセッ
-    " トする
+    " 最後のタブページの後は TabLineFill で埋め、タブページ番号をリセットする
     
     return s
 endfunction
