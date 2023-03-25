@@ -1,8 +1,9 @@
-# Install Requirements
+#!/bin/bash
+# Install Requirements for Linux
 
 # apt update and install
-apt update 
-apt install unzip
+sudo apt update -y
+sudo apt install unzip -y
 
 # install vim-plug
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \

@@ -15,7 +15,10 @@ Plug 'vim-denops/denops.vim'
 
 " ddu's ui, source, filter, and kind
 Plug 'Shougo/ddu-ui-ff'
+Plug 'Shougo/ddu-ui-filer'
+Plug 'Shougo/ddu-column-filename'
 Plug 'Shougo/ddu-source-file_rec'
+Plug 'Shougo/ddu-source-file'
 Plug 'Shougo/ddu-filter-matcher_substring'
 Plug 'Shougo/ddu-kind-file'
 
@@ -50,9 +53,11 @@ Plug 'itchyny/lightline.vim'
 Plug 'cocopon/iceberg.vim'
 
 " skk
-Plug 'kuuote/denops-skkeleton.vim'
+"Plug 'kuuote/denops-skkeleton.vim'
+Plug 'vim-skk/skkeleton'
 
 call plug#end()
+
 
 " NERDTree settings
 autocmd StdinReadPre * let s:std_in=1
@@ -75,18 +80,23 @@ call ddc#custom#patch_global('sources', [
 "" source options.
 call ddc#custom#patch_global('sourceOptions', {
       \ '_': {
-      \   'matchers': ['matcher_head'],
-      \   'sorters': ['sorter_rank'],
+      \    'matchers': ['matcher_head'],
+      \    'sorters': ['sorter_rank'],
 	  \ },
-	  \ 'skkeleton': {'mark': 'skkeleton', 'matchers': ['skkeleton'], 'sorters': []}, 
+	  \ 'skkeleton': {
+	  \ 'mark': 'skkeleton', 
+	  \    'matchers': ['skkeleton'], 
+	  \    'sorters': [], 
+	  \    'isVolatile': v:true
+	  \ }, 
 	  \ 'around': {'mark': 'A'},
 	  \ 'vsnip': {'mark': 'snippet'},
 	  \ 'vim-lsp': {
-      \   'mark': 'lsp',
-	  \   'minAutoCompleteLength': 1,
-	  \   'forceCompletionPattern': '\.',
+      \    'mark': 'lsp',
+	  \    'minAutoCompleteLength': 1,
+	  \    'forceCompletionPattern': '\.',
       \ }, 
-	  \ })
+	  \})
 
 "" source parameters.
 call ddc#custom#patch_global('sourceParams', {
@@ -108,58 +118,114 @@ inoremap <expr><S-TAB>  pumvisible() ? '<C-p>' : '<C-h>'
 
 " ddu settings
 " You must set the default ui.
-" Note: ff ui
 call ddu#custom#patch_global({
-	\ 'ui': 'ff',
-	\   'kindOptions': {
-    \     'file': {
-    \       'defaultAction': 'open',
-    \     },
-	\   },
-	\ 'sources': [{'name': 'file_rec', 'params': {}}],
-	\   'sourceOptions': {
-    \     '_': {
-    \       'matchers': ['matcher_substring'],
-    \     },
-	\   },
-	\ 'filterParams': {
-    \  'matcher_substring': {
-    \    'highlightMatched': 'Title',
-    \  },
-    \ 
-	\},
-	\'uiParams': {
-	\   'ff': {
- 	\	'startFilter': v:true,
-	\},
-	\},  
- 	\})
+    \ 'ui': 'ff',
+    \ })
+
+call ddu#custom#patch_global({
+			\ 'sources': [{'name': 'file_rec', 'params': {}}],
+			\   'sourceOptions': {
+			\     '_': {
+			\       'matchers': ['matcher_substring'],
+			\     },
+			\   },
+			\   'kindOptions': {
+			\     'file': {
+			\       'defaultAction': 'open',
+			\     },
+			\   },
+			\ 'filterParams': {
+			\  'matcher_substring': {
+			\    'highlightMatched': 'Title',
+			\  },
+			\},
+			\'uiParams': {
+			\   'ff': {
+			\	'startFilter': v:true,
+			\},
+			\},  
+			\})
+
+call ddu#custom#patch_local('filer', {
+			\ 'ui': 'filer',
+			\   'sources': [{'name': 'file', 'params': {}}],
+			\   'sourceOptions': {
+			\     '_': {
+			\       'columns': ['filename'],
+			\     },
+			\   },
+			\   'kindOptions': {
+			\     'file': {
+			\       'defaultAction': 'open',
+			\     },
+			\   },
+			\   'uiParams': {
+			\     'filer': {
+			\       'winWidth': 40,
+			\       'split': 'vertical',
+			\       'splitDirection': 'topleft',
+			\     }
+			\   },
+			\ })
 
 autocmd FileType ddu-ff call s:ddu_my_settings()
 function! s:ddu_my_settings() abort
   nnoremap <buffer><silent> <CR>
         \ <Cmd>call ddu#ui#ff#do_action('itemAction')<CR>
-  nnoremap <buffer><silent> <Space>
+  nnoremap <buffer><silent> t
         \ <Cmd>call ddu#ui#ff#do_action('toggleSelectItem')<CR>
   nnoremap <buffer><silent> i
         \ <Cmd>call ddu#ui#ff#do_action('openFilterWindow')<CR>
   nnoremap <buffer><silent> q
         \ <Cmd>call ddu#ui#ff#do_action('quit')<CR>
+
 endfunction
 
-autocmd FileType ddu-ff-filter call s:ddu_filter_my_settings()
+autocmd filetype ddu-ff-filter call s:ddu_filter_my_settings()
 function! s:ddu_filter_my_settings() abort
-  inoremap <buffer><silent> <CR>
-  \ <Esc><Cmd>call ddu#ui#ff#close()<CR>
-  nnoremap <buffer><silent> <CR>
-  \ <Cmd>call ddu#ui#ff#close()<CR>
+  inoremap <buffer><silent> <cr>
+  \ <esc><cmd>call ddu#ui#ff#close()<cr>
+  nnoremap <buffer><silent> <cr>
+  \ <cmd>call ddu#ui#ff#close()<cr>
   nnoremap <buffer><silent> q
-  \ <Cmd>call ddu#ui#ff#close()<CR>
+  \ <cmd>call ddu#ui#ff#close()<cr>
+endfunction
+ 
+" ddu-ui-filer settings
+" To move or copy the selected files, you must 'p' after using 'mv' or 'c'
+autocmd filetype ddu-filer call s:ddu_filer_my_settings()
+function! s:ddu_filer_my_settings() abort
+  nnoremap <buffer><silent><expr> <CR>
+	\ ddu#ui#filer#is_tree() ?
+    \ "<Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'narrow'})<CR>" :
+    \ "<Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'open', 'params': {'command': 'vsplit'}})<CR>"
+  nnoremap <buffer><silent> <Space>
+    \ <Cmd>call ddu#ui#filer#do_action('toggleSelectItem')<CR>
+  nnoremap <buffer> o
+    \ <Cmd>call ddu#ui#filer#do_action('expandItem',
+    \ {'mode': 'toggle'})<CR>
+  nnoremap <buffer><silent> q
+    \ <Cmd>call ddu#ui#filer#do_action('quit')<CR>  
+  nnoremap <buffer><silent> ..
+    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'narrow', 'params': {'path': '..'}})<CR>
+  nnoremap <buffer><silent> r
+    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'rename'})<CR>
+  nnoremap <buffer><silent> d
+    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'delete'})<CR>
+  nnoremap <buffer><silent> mv
+    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'move'})<CR>
+  nnoremap <buffer><silent> c
+    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'copy'})<CR>
+  nnoremap <buffer><silent> p
+    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'paste'})<CR>
+  nnoremap <buffer><silent> t
+    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'newFile'})<CR>
+  nnoremap <buffer><silent> mk
+    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'newDirectory'})<CR>
 endfunction
 
 nmap <silent> ;f <Cmd>call ddu#start({})<CR>
-""nmap <silent> ;r <Cmd>call ddu#start({'name':'register'})<CR>
-"nmap <silent> ;b <Cmd>call ddu#start({'name':'buffer'})<CR>
+nmap <silent> ;r <Cmd>call ddu#start({'name':'filer'})<CR>
 
 " lsp settings
 let g:lsp_diagnostics_enabled = 1
@@ -168,18 +234,12 @@ let g:lsp_diagnostics_echo_cursor = 1
 " snippet
 " NOTE: You can use other key to expand snippet.
 " Expand
-imap <expr> <C-o>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-o>'
-smap <expr> <C-o>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-o>'
+imap <expr> <C-e>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-e>'
+smap <expr> <C-e>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-e>'
 
 " Expand or jump
 imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
 smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
-
-" Jump forward or backward
-imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
-smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
 
 " Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
 " See https://github.com/hrsh7th/vim-vsnip/pull/50
@@ -197,19 +257,20 @@ let g:vsnip_filetypes.typescriptreact = ['typescript']
 imap <C-j> <Plug>(skkeleton-toggle)
 cmap <C-j> <Plug>(skkeleton-toggle)
 "let g:skkeleton#debug = v:true
-call skkeleton#config({
-	\ 'globalJisyo': "~/.eskk/SKK-JISYO.L",
-	\ 'eggLikeNewline': v:true,
-	\ })
-call skkeleton#register_kanatable('rom', {
-	\ "z\<Space>": ["\u3000", ''],
-	\ })
-autocmd MyAutoCmd User skkeleton-initialize-pre call s:skkeleton_pre()      
-function! s:skkeleton_pre() abort
-    " Overwrite sources
-    let s:prev_buffer_config = ddc#custom#get_buffer()
-    call ddc#custom#patch_buffer('sources', ['skkeleton'])
-endfunction
+function! s:skkeleton_init() abort
+     call skkeleton#config({
+   	\ 'globalJisyo': "~/.eskk/SKK-JISYO.L",
+       \ 'eggLikeNewline': v:true,
+       \ })
+     call skkeleton#register_kanatable('rom', {
+       \ "z\<Space>": ["\u3000", ''],
+       \ "xn": ["ん", ''],
+       \ })
+    endfunction
+    augroup skkeleton-initialize-pre
+      autocmd!
+      autocmd User skkeleton-initialize-pre call s:skkeleton_init()
+    augroup END
 
 " Use ddc.
 call ddc#enable()
@@ -342,6 +403,7 @@ set hlsearch            " 検索マッチテキストをハイライト
 " マクロおよびキー設定
 " カーソル下の単語を * で検索
 vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v, '\/'), "\n", '\\n', 'g')<CR><CR>
+
 " [ と打ったら [] って入力されてしかも括弧の中にいる(以下同様)
 inoremap [ []<left>
 inoremap ( ()<left>
@@ -362,6 +424,7 @@ function! IndentBraces()
 endfunction
 " Enterに割り当て
 inoremap <silent> <expr> <CR> IndentBraces()
+ 
 " Ctrl + hjkl でウィンドウ間を移動
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
