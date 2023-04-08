@@ -184,21 +184,23 @@ endfunction
 autocmd filetype ddu-ff-filter call s:ddu_filter_my_settings()
 function! s:ddu_filter_my_settings() abort
   inoremap <buffer><silent> <cr>
-  \ <esc><cmd>call ddu#ui#ff#close()<cr>
+  \ <esc><cmd>call ddu#ui#ff#do_action('closeFilterWindow')<cr>
   nnoremap <buffer><silent> <cr>
-  \ <cmd>call ddu#ui#ff#close()<cr>
+  \ <cmd>call ddu#ui#ff#do_action('closeFilterWindow')<cr>
   nnoremap <buffer><silent> q
-  \ <cmd>call ddu#ui#ff#close()<cr>
+  \ <cmd>call ddu#ui#ff#do_action('closeFilterWindow')<cr>
 endfunction
  
 " ddu-ui-filer settings
 " To move or copy the selected files, you must 'p' after using 'mv' or 'c'
 autocmd filetype ddu-filer call s:ddu_filer_my_settings()
 function! s:ddu_filer_my_settings() abort
-  nnoremap <buffer><silent><expr> <CR>
-	\ ddu#ui#filer#is_tree() ?
-    \ "<Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'narrow'})<CR>" :
-    \ "<Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'open', 'params': {'command': 'vsplit'}})<CR>"
+  nnoremap <buffer><expr> <CR>
+		\ ddu#ui#get_item()->get('isTree', v:false) ?
+		\ "<Cmd>call ddu#ui#do_action('itemAction',
+		\  {'name': 'narrow'})<CR>" :
+		\ "<Cmd>call ddu#ui#do_action('itemAction',
+		\  {'name': 'open'})<CR>"
   nnoremap <buffer><silent> <Space>
     \ <Cmd>call ddu#ui#filer#do_action('toggleSelectItem')<CR>
   nnoremap <buffer> o
