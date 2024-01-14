@@ -35,18 +35,18 @@ Plug 'Shougo/ddc-sorter_rank'
 " lsp
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings' 
-Plug 'shun/ddc-vim-lsp' 
+Plug 'Shougo/ddc-source-lsp' 
 Plug 'JuliaEditorSupport/julia-vim'
 
 " snippets
 Plug 'hrsh7th/vim-vsnip'
-Plug 'hrsh7th/vim-vsnip-integ'
+Plug 'uga-rosa/ddc-source-vsnip'
 
 " git
 Plug 'tpope/vim-fugitive'
 
 " markdown preview
-Plug 'kat0h/bufpreview.vim'
+Plug 'kat0h/bufpreview.vim', { 'do': 'deno task prepare' }
 
 " vim theme
 Plug 'itchyny/lightline.vim'
@@ -58,10 +58,13 @@ Plug 'vim-skk/skkeleton'
 
 call plug#end()
 
+" for lsp debug
+"let lsp_log_verbose=1
+"let lsp_log_file='/tmp/lsp.log'
 
 " NERDTree settings
 autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif 
+""autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif 
 noremap <C-@> :NERDTreeToggle<CR>
 
 " ddc settings
@@ -71,39 +74,46 @@ call ddc#custom#patch_global('ui', 'native')
 
 " sources.
 call ddc#custom#patch_global('sources', [
-			\ 'vim-lsp',
+			\ 'lsp',
 			\ 'skkeleton',
 			\ 'vsnip',
 			\ 'around',
 			\ ])
 
 "" source options.
-call ddc#custom#patch_global('sourceOptions', {
-      \ '_': {
-      \    'matchers': ['matcher_head'],
-      \    'sorters': ['sorter_rank'],
+call ddc#custom#patch_global('sourceOptions', #{
+      \ _: #{
+      \    matchers: ['matcher_head'],
+      \    sorters: ['sorter_rank'],
 	  \ },
-	  \ 'skkeleton': {
-	  \ 'mark': 'skkeleton', 
-	  \    'matchers': ['skkeleton'], 
-	  \    'sorters': [], 
-	  \    'isVolatile': v:true
+	  \ skkeleton: #{
+	  \    mark: 'skkeleton', 
+	  \    matchers: ['skkeleton'], 
+	  \    sorters: [], 
+	  \    isVolatile: v:true
 	  \ }, 
-	  \ 'around': {'mark': 'A'},
-	  \ 'vsnip': {'mark': 'snippet'},
-	  \ 'vim-lsp': {
-      \    'mark': 'lsp',
-	  \    'minAutoCompleteLength': 1,
-	  \    'forceCompletionPattern': '\.',
-      \ }, 
+	  \ around: #{mark: 'A'},
+	  \ vsnip: #{mark: 'snippet'},
+      \   lsp: #{
+      \     mark: 'lsp',
+      \     forceCompletionPattern: '\.\w*|:\w*|->\w*',
+	  \ },
 	  \})
 
 "" source parameters.
-call ddc#custom#patch_global('sourceParams', {
-      \ 'around': {'maxSize': 500},
+call ddc#custom#patch_global('sourceParams', #{
+      \ around: #{maxSize: 500},
+      \ lsp: #{
+      \     snippetEngine: denops#callback#register({
+      \           body -> vsnip#anonymous(body)
+      \     }),
+	  \     lspEngine: 'vim-lsp',
+	  \     enableResolveItem: v:true,
+      \     enableAdditionalTextEdit: v:true,
+      \   }
       \ })
-call ddc#custom#patch_filetype('markdown', 'sourceParams', {
-      \ 'around': {'maxSize': 100},
+call ddc#custom#patch_filetype('markdown', 'sourceParams', #{
+      \ around: #{maxSize: 100},
       \ })
 
 "" Mappings
@@ -261,7 +271,7 @@ cmap <C-j> <Plug>(skkeleton-toggle)
 "let g:skkeleton#debug = v:true
 function! s:skkeleton_init() abort
      call skkeleton#config({
-   	\ 'globalJisyo': "~/.eskk/SKK-JISYO.L",
+   	   \ 'globalDictionaries': ["~/.eskk/SKK-JISYO.L"],
        \ 'eggLikeNewline': v:true,
        \ })
      call skkeleton#register_kanatable('rom', {
