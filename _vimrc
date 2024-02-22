@@ -64,7 +64,7 @@ call plug#end()
 
 " NERDTree settings
 autocmd StdinReadPre * let s:std_in=1
-""autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif 
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif 
 noremap <C-@> :NERDTreeToggle<CR>
 
 " ddc settings
@@ -94,7 +94,7 @@ call ddc#custom#patch_global('sourceOptions', #{
 	  \ }, 
 	  \ around: #{mark: 'A'},
 	  \ vsnip: #{mark: 'snippet'},
-      \   lsp: #{
+      \ lsp: #{
       \     mark: 'lsp',
       \     forceCompletionPattern: '\.\w*|:\w*|->\w*',
 	  \ },
@@ -118,7 +118,7 @@ call ddc#custom#patch_filetype('markdown', 'sourceParams', #{
 
 "" Mappings
 " <TAB>: completion.
-inoremap <silent><expr> <TAB>
+inoremap <expr> <TAB>
 \ pumvisible() ? '<C-n>' :
 \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
 \ '<TAB>' : ddc#manual_complete()
@@ -181,24 +181,24 @@ call ddu#custom#patch_local('filer', {
 autocmd FileType ddu-ff call s:ddu_my_settings()
 function! s:ddu_my_settings() abort
   nnoremap <buffer><silent> <CR>
-        \ <Cmd>call ddu#ui#ff#do_action('itemAction')<CR>
+        \ <Cmd>call ddu#ui#do_action('itemAction')<CR>
   nnoremap <buffer><silent> t
-        \ <Cmd>call ddu#ui#ff#do_action('toggleSelectItem')<CR>
+        \ <Cmd>call ddu#ui#do_action('toggleSelectItem')<CR>
   nnoremap <buffer><silent> i
-        \ <Cmd>call ddu#ui#ff#do_action('openFilterWindow')<CR>
+        \ <Cmd>call ddu#ui#do_action('openFilterWindow')<CR>
   nnoremap <buffer><silent> q
-        \ <Cmd>call ddu#ui#ff#do_action('quit')<CR>
+        \ <Cmd>call ddu#ui#do_action('quit')<CR>
 
 endfunction
 
 autocmd filetype ddu-ff-filter call s:ddu_filter_my_settings()
 function! s:ddu_filter_my_settings() abort
   inoremap <buffer><silent> <cr>
-  \ <esc><cmd>call ddu#ui#ff#do_action('closeFilterWindow')<cr>
+  \ <esc><cmd>call ddu#ui#do_action('closeFilterWindow')<cr>
   nnoremap <buffer><silent> <cr>
-  \ <cmd>call ddu#ui#ff#do_action('closeFilterWindow')<cr>
+  \ <cmd>call ddu#ui#do_action('closeFilterWindow')<cr>
   nnoremap <buffer><silent> q
-  \ <cmd>call ddu#ui#ff#do_action('closeFilterWindow')<cr>
+  \ <cmd>call ddu#ui#do_action('closeFilterWindow')<cr>
 endfunction
  
 " ddu-ui-filer settings
@@ -302,9 +302,6 @@ let g:lightline = {
         \ },
 \}
 
-" debug
-"set verbosefile=/tmp/vim.log
-"set verbose=0
 
 " display
 set t_Co=256
