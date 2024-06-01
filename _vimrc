@@ -26,7 +26,7 @@ Plug 'Shougo/ddu-kind-file'
 Plug 'Shougo/ddc-ui-native'
 
 " Install sources
-Plug 'Shougo/ddc-around'
+Plug 'Shougo/ddc-source-around'
 
 " Install filters
 Plug 'Shougo/ddc-matcher_head'
@@ -53,7 +53,6 @@ Plug 'itchyny/lightline.vim'
 Plug 'cocopon/iceberg.vim'
 
 " skk
-"Plug 'kuuote/denops-skkeleton.vim'
 Plug 'vim-skk/skkeleton'
 
 call plug#end()
@@ -108,7 +107,6 @@ call ddc#custom#patch_global('sourceParams', #{
       \           body -> vsnip#anonymous(body)
       \     }),
 	  \     lspEngine: 'vim-lsp',
-	  \     enableResolveItem: v:true,
       \     enableAdditionalTextEdit: v:true,
       \   }
       \ })
@@ -121,7 +119,7 @@ call ddc#custom#patch_filetype('markdown', 'sourceParams', #{
 inoremap <expr> <TAB>
 \ pumvisible() ? '<C-n>' :
 \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
-\ '<TAB>' : ddc#manual_complete()
+\ '<TAB>' : ddc#map#manual_complete()
 
 " <S-TAB>: completion back.
 inoremap <expr><S-TAB>  pumvisible() ? '<C-p>' : '<C-h>'
@@ -148,11 +146,6 @@ call ddu#custom#patch_global({
 			\  'matcher_substring': {
 			\    'highlightMatched': 'Title',
 			\  },
-			\},
-			\'uiParams': {
-			\   'ff': {
-			\	'startFilter': v:true,
-			\},
 			\},  
 			\})
 
@@ -178,6 +171,10 @@ call ddu#custom#patch_local('filer', {
 			\   },
 			\ })
 
+" Use ddc.
+call ddc#enable()
+
+" ddu settings
 autocmd FileType ddu-ff call s:ddu_my_settings()
 function! s:ddu_my_settings() abort
   nnoremap <buffer><silent> <CR>
@@ -212,28 +209,28 @@ function! s:ddu_filer_my_settings() abort
 		\ "<Cmd>call ddu#ui#do_action('itemAction',
 		\  {'name': 'open'})<CR>"
   nnoremap <buffer><silent> <Space>
-    \ <Cmd>call ddu#ui#filer#do_action('toggleSelectItem')<CR>
+    \ <Cmd>call ddu#ui#do_action('toggleSelectItem')<CR>
   nnoremap <buffer> o
-    \ <Cmd>call ddu#ui#filer#do_action('expandItem',
+    \ <Cmd>call ddu#ui#do_action('expandItem',
     \ {'mode': 'toggle'})<CR>
   nnoremap <buffer><silent> q
-    \ <Cmd>call ddu#ui#filer#do_action('quit')<CR>  
+    \ <Cmd>call ddu#ui#do_action('quit')<CR>  
   nnoremap <buffer><silent> ..
-    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'narrow', 'params': {'path': '..'}})<CR>
+    \ <Cmd>call ddu#ui#do_action('itemAction', {'name': 'narrow', 'params': {'path': '..'}})<CR>
   nnoremap <buffer><silent> r
-    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'rename'})<CR>
+    \ <Cmd>call ddu#ui#do_action('itemAction', {'name': 'rename'})<CR>
   nnoremap <buffer><silent> d
-    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'delete'})<CR>
+    \ <Cmd>call ddu#ui#do_action('itemAction', {'name': 'delete'})<CR>
   nnoremap <buffer><silent> mv
-    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'move'})<CR>
+    \ <Cmd>call ddu#ui#do_action('itemAction', {'name': 'move'})<CR>
   nnoremap <buffer><silent> c
-    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'copy'})<CR>
+    \ <Cmd>call ddu#ui#do_action('itemAction', {'name': 'copy'})<CR>
   nnoremap <buffer><silent> p
-    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'paste'})<CR>
+    \ <Cmd>call ddu#ui#do_action('itemAction', {'name': 'paste'})<CR>
   nnoremap <buffer><silent> t
-    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'newFile'})<CR>
+    \ <Cmd>call ddu#ui#do_action('itemAction', {'name': 'newFile'})<CR>
   nnoremap <buffer><silent> mk
-    \ <Cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'newDirectory'})<CR>
+    \ <Cmd>call ddu#ui#do_action('itemAction', {'name': 'newDirectory'})<CR>
 endfunction
 
 nmap <silent> ;f <Cmd>call ddu#start({})<CR>
@@ -283,9 +280,6 @@ function! s:skkeleton_init() abort
       autocmd!
       autocmd User skkeleton-initialize-pre call s:skkeleton_init()
     augroup END
-
-" Use ddc.
-call ddc#enable()
 
 " lightline settings
 let g:lightline = {
@@ -413,12 +407,12 @@ set hlsearch            " 検索マッチテキストをハイライト
 " カーソル下の単語を * で検索
 vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v, '\/'), "\n", '\\n', 'g')<CR><CR>
 
-" [ と打ったら [] って入力されてしかも括弧の中にいる(以下同様)
 inoremap [ []<left>
 inoremap ( ()<left>
 inoremap { {}<left>
 inoremap " ""<left>
 inoremap ' ''<left>
+
 " {}でEnterを押すとインデントが入って括弧の中に移動
 function! IndentBraces()
     let nowletter = getline(".")[col(".")-1]    " 今いるカーソルの文字
