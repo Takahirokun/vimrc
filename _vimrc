@@ -55,6 +55,9 @@ Plug 'cocopon/iceberg.vim'
 " skk
 Plug 'vim-skk/skkeleton'
 
+" copilot
+Plug 'github/copilot.vim'
+
 call plug#end()
 
 " for lsp debug
@@ -87,9 +90,9 @@ call ddc#custom#patch_global('sourceOptions', #{
 	  \ },
 	  \ skkeleton: #{
 	  \    mark: 'skkeleton', 
-	  \    matchers: ['skkeleton'], 
+	  \    matchers: [], 
 	  \    sorters: [], 
-	  \    isVolatile: v:true
+	  \    isVolatile: v:true,
 	  \ }, 
 	  \ around: #{mark: 'A'},
 	  \ vsnip: #{mark: 'snippet'},
@@ -131,7 +134,11 @@ call ddu#custom#patch_global({
     \ })
 
 call ddu#custom#patch_global({
-			\ 'sources': [{'name': 'file_rec', 'params': {}}],
+			\ 'sources': [{'name': 'file_rec', 
+			\   'params': {
+			\     'ignoredDirectories': ["node_modules",".git",".vscode"],
+			\	}
+			\ }],
 			\   'sourceOptions': {
 			\     '_': {
 			\       'matchers': ['matcher_substring'],
@@ -240,6 +247,8 @@ nmap <silent> ;r <Cmd>call ddu#start({'name':'filer'})<CR>
 let g:lsp_diagnostics_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
 
+let g:lsp_settings_filetype_typescript = ['typescript-language-server', 'eslint-language-server', 'deno']
+
 " snippet
 " NOTE: You can use other key to expand snippet.
 " Expand
@@ -280,6 +289,12 @@ function! s:skkeleton_init() abort
       autocmd!
       autocmd User skkeleton-initialize-pre call s:skkeleton_init()
     augroup END
+
+" copilot settings
+let g:copilot_filetypes = {
+	\ '*': v:false,
+	\ 'python': v:true,
+	\ }
 
 " lightline settings
 let g:lightline = {
