@@ -55,6 +55,9 @@ Plug 'cocopon/iceberg.vim'
 " skk
 Plug 'vim-skk/skkeleton'
 
+" copilot
+Plug 'github/copilot.vim'
+
 call plug#end()
 
 " for lsp debug
@@ -79,7 +82,7 @@ call ddc#custom#patch_global('sources', [
 			\ 'around',
 			\ ])
 
-"" source options.
+" source options.
 call ddc#custom#patch_global('sourceOptions', #{
       \ _: #{
       \    matchers: ['matcher_head'],
@@ -87,9 +90,9 @@ call ddc#custom#patch_global('sourceOptions', #{
 	  \ },
 	  \ skkeleton: #{
 	  \    mark: 'skkeleton', 
-	  \    matchers: ['skkeleton'], 
+	  \    matchers: [], 
 	  \    sorters: [], 
-	  \    isVolatile: v:true
+	  \    isVolatile: v:true,
 	  \ }, 
 	  \ around: #{mark: 'A'},
 	  \ vsnip: #{mark: 'snippet'},
@@ -99,7 +102,7 @@ call ddc#custom#patch_global('sourceOptions', #{
 	  \ },
 	  \})
 
-"" source parameters.
+" source parameters.
 call ddc#custom#patch_global('sourceParams', #{
       \ around: #{maxSize: 500},
       \ lsp: #{
@@ -114,7 +117,7 @@ call ddc#custom#patch_filetype('markdown', 'sourceParams', #{
       \ around: #{maxSize: 100},
       \ })
 
-"" Mappings
+" Mappings
 " <TAB>: completion.
 inoremap <expr> <TAB>
 \ pumvisible() ? '<C-n>' :
@@ -131,7 +134,11 @@ call ddu#custom#patch_global({
     \ })
 
 call ddu#custom#patch_global({
-			\ 'sources': [{'name': 'file_rec', 'params': {}}],
+			\ 'sources': [{'name': 'file_rec', 
+			\   'params': {
+			\     'ignoredDirectories': ["node_modules",".git",".vscode"],
+			\	}
+			\ }],
 			\   'sourceOptions': {
 			\     '_': {
 			\       'matchers': ['matcher_substring'],
@@ -240,8 +247,9 @@ nmap <silent> ;r <Cmd>call ddu#start({'name':'filer'})<CR>
 let g:lsp_diagnostics_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
 
+let g:lsp_settings_filetype_typescript = ['typescript-language-server', 'eslint-language-server', 'deno']
+
 " snippet
-" NOTE: You can use other key to expand snippet.
 " Expand
 imap <expr> <C-e>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-e>'
 smap <expr> <C-e>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-e>'
@@ -251,7 +259,6 @@ imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l
 smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
 
 " Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
-" See https://github.com/hrsh7th/vim-vsnip/pull/50
 nmap        s   <Plug>(vsnip-select-text)
 xmap        s   <Plug>(vsnip-select-text)
 nmap        S   <Plug>(vsnip-cut-text)
@@ -281,6 +288,12 @@ function! s:skkeleton_init() abort
       autocmd User skkeleton-initialize-pre call s:skkeleton_init()
     augroup END
 
+" copilot settings
+let g:copilot_filetypes = {
+	\ '*': v:false,
+	\ 'python': v:true,
+	\ }
+
 " lightline settings
 let g:lightline = {
     \'enable': {
@@ -305,8 +318,8 @@ colorscheme iceberg
 filetype plugin indent on 
 syntax enable
 set number              " 行番号の表示
-set ruler               " カーソル位置が右下に表示
-set wildmenu            " コマンドライン補完を表示する
+set ruler               " カーソル位置を右下に表示
+set wildmenu            " コマンドライン補完の候補を表示する
 set showcmd             " コマンドを画面の最下部に表示する
 set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
@@ -334,18 +347,18 @@ if has('vim_starting')
     let &t_SR .= "\e[4 q"
 endif
 
-""" 編集関係
+"" 編集関係
 "set fileencodings=ucs-bom,iso-2022-jp-3,iso-2022-jp,eucjp-ms,euc-jisx0213,euc-jp,sjis,cp932,utf-8 " エンコード
 set infercase           " 補完時に大文字小文字を区別しない
 set virtualedit=all     " カーソルを文字が存在しない部分でも動けるようにする
-set hidden              " バッファを閉じる代わりに隠す（Undo履歴を残すため）
+set hidden              " バッファを閉じる代わりに隠す
 set switchbuf=useopen   " 新しく開く代わりにすでに開いてあるバッファを開く
 set showmatch           " 対応する括弧などをハイライト表示する
 set matchtime=3         " 対応括弧のハイライト表示を3秒にする
 set autoindent          " 改行時にインデントを引き継いで改行する
 set shiftwidth=4        " インデントにつかわれる空白の数
-set softtabstop=4       " <Tab>押下時の空白数
-set tabstop=4           " <Tab>が対応する空白の数
+set softtabstop=4       " インサートモード時における<Tab>押下時の空白数
+set tabstop=4           " <Tab>文字が対応する空白の数
 set shiftround          " '<'や'>'でインデントする際に'shiftwidth'の倍数に丸める
 " 対応括弧に'<'と'>'のペアを追加
 set matchpairs& matchpairs+=<:>
@@ -392,12 +405,11 @@ function MyTabLine()
     endfor
 
     " 最後のタブページの後は TabLineFill で埋め、タブページ番号をリセットする
-    
     return s
 endfunction
 set tabline=%!MyTabLine()
 
-" 検索関係
+"" 検索関係
 set ignorecase          " 大文字小文字を区別しない
 set smartcase           " 検索文字に大文字がある場合は大文字小文字を区別
 set incsearch           " インクリメンタルサーチ
