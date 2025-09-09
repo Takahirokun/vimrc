@@ -367,9 +367,9 @@ set matchpairs& matchpairs+=<:>
 set backspace=indent,eol,start
 " クリップボードをデフォルトのレジスタとして指定。
 if has('unnamedplus')
-    set clipboard& clipboard+=unnamedplus,unnamed
+    set clipboard^=unnamedplus
 else
-    set clipboard& clipboard+=unnamed
+    set clipboard^=unnamed
 endif
 " Swapファイル, Backupファイルを全て無効化する
 set nowritebackup
