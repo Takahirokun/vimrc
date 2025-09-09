@@ -97,6 +97,7 @@ call ddc#custom#patch_global('sourceOptions', #{
 	  \ around: #{mark: 'A'},
 	  \ vsnip: #{mark: 'snippet'},
       \ lsp: #{
+	  \     isVolatile: v:true,
       \     mark: 'lsp',
       \     forceCompletionPattern: '\.\w*|:\w*|->\w*',
 	  \ },
@@ -366,9 +367,9 @@ set matchpairs& matchpairs+=<:>
 set backspace=indent,eol,start
 " クリップボードをデフォルトのレジスタとして指定。
 if has('unnamedplus')
-    set clipboard& clipboard+=unnamedplus,unnamed
+    set clipboard^=unnamedplus
 else
-    set clipboard& clipboard+=unnamed
+    set clipboard^=unnamed
 endif
 " Swapファイル, Backupファイルを全て無効化する
 set nowritebackup
@@ -460,5 +461,5 @@ autocmd QuickFixCmdPost *grep* cwindow
 augroup setAutoCompile
     autocmd!
     autocmd BufWritePost *.c :!gcc %:p
-    autocmd BufWritePost *.cpp :!g++ -std=c++14 %:p
+    autocmd BufWritePost *.cpp :!g++ -std=c++20 %:p
 augroup END 
