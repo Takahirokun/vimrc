@@ -97,6 +97,7 @@ call ddc#custom#patch_global('sourceOptions', #{
 	  \ around: #{mark: 'A'},
 	  \ vsnip: #{mark: 'snippet'},
       \ lsp: #{
+	  \     isVolatile: v:true,
       \     mark: 'lsp',
       \     forceCompletionPattern: '\.\w*|:\w*|->\w*',
 	  \ },
