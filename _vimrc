@@ -461,5 +461,5 @@ autocmd QuickFixCmdPost *grep* cwindow
 augroup setAutoCompile
     autocmd!
     autocmd BufWritePost *.c :!gcc %:p
-    autocmd BufWritePost *.cpp :!g++ -std=c++14 %:p
+    autocmd BufWritePost *.cpp :!g++ -std=c++20 %:p
 augroup END 
