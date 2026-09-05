@@ -6,7 +6,7 @@ augroup END
 " プラグイン
 call plug#begin('~/.vim/plugged')
 
-Plug 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdtree', { 'on': ['NERDTree', 'NERDTreeToggle'] }
 
 " auto completion and fuzzy finder
 Plug 'Shougo/ddc.vim'
@@ -36,17 +36,17 @@ Plug 'Shougo/ddc-sorter_rank'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings' 
 Plug 'Shougo/ddc-source-lsp' 
-Plug 'JuliaEditorSupport/julia-vim'
+Plug 'JuliaEditorSupport/julia-vim', { 'for': 'julia' }
 
 " snippets
 Plug 'hrsh7th/vim-vsnip'
 Plug 'uga-rosa/ddc-source-vsnip'
 
 " git
-Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-fugitive', { 'on': 'Git' }
 
 " markdown preview
-Plug 'kat0h/bufpreview.vim', { 'do': 'deno task prepare' }
+Plug 'kat0h/bufpreview.vim', { 'for': 'markdown', 'do': 'deno task prepare' }
 
 " vim theme
 Plug 'itchyny/lightline.vim'
@@ -56,7 +56,7 @@ Plug 'cocopon/iceberg.vim'
 Plug 'vim-skk/skkeleton'
 
 " copilot
-Plug 'github/copilot.vim'
+Plug 'github/copilot.vim', { 'for': 'python' }
 
 call plug#end()
 
@@ -66,7 +66,6 @@ call plug#end()
 
 " NERDTree settings
 autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif 
 noremap <C-@> :NERDTreeToggle<CR>
 
 " ddc settings
@@ -296,6 +295,10 @@ let g:copilot_filetypes = {
 	\ }
 
 " lightline settings
+function! MyGitBranch() abort
+    return exists('*fugitive#head') ? fugitive#head() : ''
+endfunction
+
 let g:lightline = {
     \'enable': {
         \ 'statusline': 1,
@@ -306,7 +309,7 @@ let g:lightline = {
         \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
         \ },
     \ 'component_function': {
-        \   'gitbranch': 'fugitive#head'
+        \   'gitbranch': 'MyGitBranch'
         \ },
 \}
 
@@ -316,7 +319,6 @@ set t_Co=256
 set background=dark
 set laststatus=2
 colorscheme iceberg
-filetype plugin indent on 
 syntax enable
 set number              " 行番号の表示
 set ruler               " カーソル位置を右下に表示
@@ -357,6 +359,7 @@ set switchbuf=useopen   " 新しく開く代わりにすでに開いてあるバ
 set showmatch           " 対応する括弧などをハイライト表示する
 set matchtime=3         " 対応括弧のハイライト表示を3秒にする
 set autoindent          " 改行時にインデントを引き継いで改行する
+set expandtab
 set shiftwidth=4        " インデントにつかわれる空白の数
 set softtabstop=4       " インサートモード時における<Tab>押下時の空白数
 set tabstop=4           " <Tab>文字が対応する空白の数
